@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Project.Models.ProjectAssignmentsUser>
+
+@{
+    ViewBag.Title = "UserProgAssign";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model is null || Model.Count() <= 0)
+{
+    <p style="color:white">Não existem projectos criados.</p>
+}
+else
+{
+    <table class="table table-striped" style="color:white;">
+        <thead>
+            <tr>
+                <th>Projeto</th>
+                <th>Tarefa</th>
+                <th>Começou em:</th>
+                <th>Acaba em:</th>
+                <th>Status</th>
+                <th>Detalhes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ProjectDetails in Model)
+            {
+                <tr>
+                    <td>@ProjectDetails.project.name</td>
+                    <td>@ProjectDetails.project.description</td>
+                    <td>@ProjectDetails.project.startDate</td>
+                    <td>@ProjectDetails.project.endDate</td>
+                    <td><span class="badge badge-warning">In Progress</span></td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-primary"
+                                id="taskButton"
+                                onclick="">
+                            Primary
+                        </button>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td>Task 2</td>
+                <td>Nullam vitae urna eu risus egestas consectetur.</td>
+                <td>2023-04-20</td>
+                <td><span class="badge badge-success">Completed</span></td>
+                <td>
+                    <button type="button"
+                            class="btn btn-primary"
+                            id="taskButton"
+                            onclick="">
+                        Primary
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>Task 3</td>
+                <td>Proin semper sapien eu elit consectetur, vitae suscipit turpis suscipit.</td>
+                <td>2023-04-30</td>
+                <td><span class="badge badge-danger">Overdue</span></td>
+                <td>
+                    <button type="button"
+                            class="btn btn-primary"
+                            id="taskButton"
+                            onclick="">
+                        Primary
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+}

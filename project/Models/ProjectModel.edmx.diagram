@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="77d6f3ae4f63417c8da70a631adef7a9" Name="Diagram1" ZoomLevel="127">
+        <EntityTypeShape EntityType="projectModel.project" Width="1.5" PointX="8.125" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="projectModel.task" Width="1.5" PointX="5.25" PointY="6.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="projectModel.user" Width="1.5" PointX="2" PointY="3.125" IsExpanded="true" />
+        <AssociationConnector Association="projectModel.FK__tasks__projectId__3B75D760" ManuallyRouted="true" >
+          <ConnectorPoint PointX="8.875" PointY="5.8071907552083326" />
+          <ConnectorPoint PointX="8.875" PointY="7.99974609375" />
+          <ConnectorPoint PointX="6.75" PointY="7.99974609375" />
+        </AssociationConnector>
+        <AssociationConnector Association="projectModel.FK__tasks__UserTaskI__6E01572D" ManuallyRouted="true" >
+          <ConnectorPoint PointX="3.5" PointY="5.7681270052083331" />
+          <ConnectorPoint PointX="6.0625" PointY="5.7681270052083331" />
+          <ConnectorPoint PointX="6.0625" PointY="6.625" />
+        </AssociationConnector>
+        <EntityTypeShape EntityType="projectModel.projectAssignment" Width="2.25" PointX="4.75" PointY="3.25" IsExpanded="true" />
+        <AssociationConnector Association="projectModel.FK__projectAs__proje__403A8C7D" />
+        <AssociationConnector Association="projectModel.FK__projectAs__userI__3F4668441" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

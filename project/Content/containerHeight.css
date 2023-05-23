@@ -1,0 +1,5 @@
+﻿@media (max-width: 480px) {
+    .containerModified {
+        height: auto !important; /* or any other value you want to set */
+    }
+}

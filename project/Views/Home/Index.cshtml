@@ -1,0 +1,288 @@
+﻿@model Project.Models.LoginViewModel
+<style>
+    .hoverView {
+        opacity: 0.8;
+        background-color: #222831;
+        color: white;
+        transition: 0.3s;
+        border-radius: 2rem;
+    }
+
+        .hoverView:hover {
+            opacity: 1.2;
+            color: white;
+            border-color: #225841;
+        }
+
+    label {
+        float: left;
+    }
+
+    .col-md-3.col-sm-6 {
+        margin-bottom: 2rem !important;
+    }
+</style>
+<div class="row text-center">
+    @{
+
+        bool isLoggedIn = true;
+        if (string.IsNullOrWhiteSpace(User.Identity.Name))
+        {
+            isLoggedIn = false;
+        }
+
+        if (isLoggedIn)
+        {
+            <div class="col-md-3 col-sm-6">
+                <a href="/Accounts/SignOut" id="SignOut" name="SignOut" class="btn hoverView" style="width: 13rem; height: 8rem;">
+                    <div class="card-body">
+                        <ion-icon size="large" name="person-outline"></ion-icon>
+                        <h5 class="card-title">Sair</h5>
+                    </div>
+                </a>
+            </div>
+            if (Model.administrator == 1)
+            {
+                <div class="col-md-3 col-sm-6 ">
+                    <a href="/AdminPanel/Index" class="btn hoverView" style="width: 13rem; height: 8rem;">
+                        <div class="card-body">
+                            <ion-icon size="large" name="settings-outline"></ion-icon>
+                            <h5 class="card-title">Administração</h5>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            <div class="col-md-3 col-sm-6">
+                <a href="/UserInterface/UserProfile" id="Profile" name="Profile" class="btn hoverView" data-toggle="modal" data-target="#userModal" data-userid="@Model.IdUser" style="width: 13rem; height: 8rem;">
+                    <div class="card-body">
+                        <ion-icon size="large" name="settings-outline"></ion-icon>
+                        <h5 class="card-title">Perfil</h5>
+                    </div>
+                </a>
+            </div>
+
+
+            <div class="col-md-3 col-sm-6 ">
+                <a href="/UserInterface/UserProjectsDetails" class="btn hoverView" style="width: 13rem; height: 8rem;">
+                    <div class="card-body">
+                        <ion-icon size="large" name="person-outline"></ion-icon>
+                        <h5 class="card-title">Meus Projetos</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a href="/ProjectsAvailable/Projects" class="btn hoverView" style="width: 13rem; height: 8rem;">
+                    <div class="card-body">
+                        <ion-icon size="large" name="receipt-outline"></ion-icon>
+                        <h5 class="card-title">Projetos disponíveis</h5>
+                    </div>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-3 col-sm-6">
+                <a href="#" class="btn hoverView" data-toggle="modal" data-target="#authenticationModal" style="width: 13rem; height: 8rem;">
+                    <div class="card-body">
+                        <ion-icon size="large" name="person-outline"></ion-icon>
+                        <h5 class="card-title">Login/Register</h5>
+                    </div>
+                </a>
+            </div>
+        }
+    }
+
+</div>
+
+@* modal *@
+<!-- Login Modal -->
+<div class="modal fade" id="authenticationModal" tabindex="-1" role="dialog" aria-labelledby="login-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #222831; color: white;">
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row justify-content-center">
+                        <div class="col-md-9">
+                            <div style=" position: relative; display: -ms-flexbox; display: flex; -ms-flex-direction: column; flex-direction: column;">
+                                <div class="card-header" style="background-color: transparent !important; border-bottom: 1px solid #fff !important; background-color: white; ">
+                                    <h5 class="card-title text-center">Login</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <input type="hidden" name="submit-type" value="login" />
+                                        <div class="form-group">
+                                            <label for="login-email">Email</label>
+                                            <input type="email" class="form-control" name="Email" id="login-email" placeholder="Enter Email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="login-password">Password</label>
+                                            <input type="password" class="form-control" name="Password" id="login-password" placeholder="Password">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="remember-me">
+                                                <label class="custom-control-label" for="remember-me">Remember me</label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">User Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="imageInput" style="cursor:pointer;">
+                            <img id="profilePicture" alt="User Profile Picture" class="img-thumbnail" style="width:150px; height:150px">
+                        </label>
+                        <input type="file" id="imageInput" style="display:none;">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" class="form-control" id="username" maxlength="10">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" class="form-control" id="email" maxlength="50">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="saveChangesBtn" type="button" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Submit form data via AJAX
+            $('#authenticationModal form').submit(function (e) {
+                e.preventDefault();
+                var $form = $(this);
+                var data = $form.serialize();
+                var formType = $form.find('input[name="submit-type"]').val();
+
+                var action = formType == 'login' ? 'Login' : 'SignUp';
+                $.ajax({
+                    url: "/Accounts/" + action,
+                    method: "POST",
+                    data: data,
+                    success: function (response) {
+                        $('#authenticationModal').modal('hide');
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            // SignOut
+            $("#SignOut").click(function (event) {
+                event.preventDefault();
+                fetch("/Accounts/SignOut", { method: "POST" })
+                    .then(function (response) {
+                        window.location.href = "/Home/Index";
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            });
+
+            $('#selectImageBtn').click(function () {
+                $('#imageInput').click();
+            });
+
+            $('#imageInput').change(function () {
+                var file = this.files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#profilePicture').attr('src', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            $('#saveChangesBtn').click(function () {
+                var file = $('#imageInput').prop('files')[0];
+                var formData = new FormData();
+                formData.append('image', file);
+
+                var userId = $('#Profile').data('userid');
+                formData.append('userId', userId);
+                var username = $('#username').val();
+                formData.append('username', username);
+                var email = $('#email').val();
+                formData.append('email', email);
+
+                $.ajax({
+                    url: '/Accounts/UpdateUser',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        Swal.fire(
+                            'The Internet?',
+                            'That thing is still around?',
+                            'success'
+                        )
+                        // Fechar o modal
+                        $('#userModal').modal('hide');
+                    },
+                    error: function (xhr, status, error) {
+                        // Lidar com erros, se houver
+                    }
+                });
+            });
+
+            $('#userModal').on('shown.bs.modal', function () {
+                var userId = $('#Profile').data('userid');
+
+                $.ajax({
+                    url: '/Accounts/GetDataUser',
+                    type: 'GET',
+                    data: { userId: userId },
+                    success: function (response) {
+                        // Popular o modal com os dados do usuário
+                        $('#username').val(response.username);
+                        $('#email').val(response.email);
+
+                        // Montar o caminho completo da imagem
+                        var imagePath = '/Content/UserImages/' + response.imageName;
+                        $('#profilePicture').attr('src', imagePath);
+                    },
+                    error: function (xhr, status, error) {
+                        // Lidar com erros, se houver
+                    }
+                });
+            });
+        });
+
+    </script>
+}

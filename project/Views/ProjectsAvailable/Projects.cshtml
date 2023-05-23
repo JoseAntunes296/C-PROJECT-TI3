@@ -1,0 +1,160 @@
+﻿@model IEnumerable<Project.Models.project>
+@{
+    ViewBag.Title = "Projects";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles {
+    <style>
+        tbody tr {
+            opacity: 0.6;
+        }
+
+        .table-container {
+            display: inline-block;
+        }
+
+        tbody tr:hover {
+            opacity: 1;
+        }
+
+        .hoverView {
+            opacity: 0.8;
+            background-color: #222831;
+            color: white;
+            transition: 0.3s;
+            border-radius: 2rem;
+        }
+
+            .hoverView:hover {
+                opacity: 1.2;
+                color: white;
+                border-color: #225841;
+            }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+}
+<div class="text-center mt-3">
+    <div class="table-responsive">
+        <table class="table" style="background-color: #222831;color:white;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome do Projeto</th>
+                    <th>Data de Início</th>
+                    <th>Data de Término</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model == null)
+                {
+                    <p>
+                        error
+                    </p>
+                }
+                else
+                {
+                    foreach (var project in Model)
+                    {
+                        <tr>
+                            <td>@project.IdProject</td>
+                            <td>
+                                @project.name
+                            </td>
+                            <td>@project.startDate.ToShortDateString()</td>
+                            <td>@project.endDate.ToShortDateString()</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#PickProjectModal" data-project-id="@project.IdProject" onclick="PickProject(this)">
+                                    Pegar Projeto
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <a href="/Home/Index" class="btn hoverView" style="background-color: #222831;color:white; ">Go Back</a>
+    </div>
+</div>
+
+<!-- Modal de Edição de Projeto -->
+<div class="modal fade" id="PickProjectModal" tabindex="-1" role="dialog" aria-labelledby="PickProjectModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="PickProjectModalLabel">Pegar Projeto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="PickProjectName">Nome do Projeto</label>
+                        <input type="text" class="form-control" id="PickProjectName" placeholder="Nome do Projeto" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="PickProjectName">Descrição</label>
+                        <textarea class="form-control" id="PickProjectDescription" placeholder="Descrição" disabled></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="PickProjectStartDate">Data de Início</label>
+                        <input type="date" class="form-control" id="PickProjectStartDate" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="PickProjectEndDate">Data de Término</label>
+                        <input type="date" class="form-control" id="PickProjectEndDate" disabled>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveChangesButton">Pegar Projeto</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+@section scripts {
+    <script>
+        function PickProject(button) {
+            var projectId = $(button).data('project-id');
+
+            $.ajax({
+                url: '/ProjectsAvailable/GetProject',
+                type: 'POST',
+                data: { projectId: projectId },
+                success: function (response) {
+
+                    const startDate = new Date(parseInt(response.startDate.replace("/Date(", "").replace(")/", "")));
+                    const endDate = new Date(parseInt(response.endDate.replace("/Date(", "").replace(")/", "")));
+
+                    const formattedStartDate = formatDate(startDate);
+                    const formattedEndDate = formatDate(endDate);
+
+                    $('#PickProjectName').val(response.name);
+                    $('#PickProjectDescription').val(response.description);
+                    $('#PickProjectStartDate').attr('value', formattedStartDate);
+                    $('#PickProjectEndDate').attr('value', formattedEndDate);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            })
+        }
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
+    </script>
+}

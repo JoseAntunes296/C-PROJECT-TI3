@@ -1,0 +1,279 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .hoverView {
+        opacity: 0.8;
+        background-color: #222831;
+        color: white;
+        transition: 0.3s;
+        border-radius: 2rem;
+    }
+
+        .hoverView:hover {
+            opacity: 1.2;
+            color: white;
+            border-color: #225841;
+        }
+
+    label {
+        float: left;
+    }
+
+    .col-md-3.col-sm-6 {
+        margin-bottom: 2rem !important;
+    }
+</style>
+<div class="row text-center">
+    @{
+
+        bool isLoggedIn = true;
+        if (string.IsNullOrWhiteSpace(User.Identity.Name))
+        {
+            isLoggedIn = false;
+        }
+
+        if (isLoggedIn)
+        {
+            <div class="col-md-3 col-sm-6 ">
+                <a href="/Home/Index" class="btn hoverView" style="width: 13rem; height: 8rem;">
+                    <div class="card-body">
+                        <ion-icon size="large" name="arrow-undo-outline"></ion-icon>
+                        <h5 class="card-title">Voltar atrás</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addProjectModal">
+                    <div class="card-body">
+                        <ion-icon size="large" name="receipt-outline"></ion-icon>
+                        <h5 class="card-title">Adicionar Projectos</h5>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3 col-sm-6 ">
+                <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addTask">
+                    <div class="card-body">
+                        <ion-icon size="large" name="receipt-outline"></ion-icon>
+                        <h5 class="card-title">Adicionar Tarefas</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addUser">
+                    <div class="card-body">
+                        <ion-icon size="large" name="receipt-outline"></ion-icon>
+                        <h5 class="card-title">Adicionar Utilizadores</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <a href="/AdminPanel/ManageProjects" class="btn hoverView" style="width: 13rem; height: 8rem;">
+                    <div class="card-body">
+                        <ion-icon size="large" name="settings-outline"></ion-icon>
+                        <h5 class="card-title">Editar Projetos</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <a href="/AdminPanel/ManageUsers" class="btn hoverView" style="width: 13rem; height: 8rem;">
+                    <div class="card-body">
+                        <ion-icon size="large" name="settings-outline"></ion-icon>
+                        <h5 class="card-title">Editar Utilizadores</h5>
+                    </div>
+                </a>
+            </div>
+        }
+        else
+        {
+            Response.Redirect("~/Home/Index");
+        }
+    }
+
+</div>
+<!-- Add Project Modal -->
+<div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="addProject" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Adicionar Projeto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="projectName">Nome do Projeto:</label>
+                        <input type="text" class="form-control" id="projectName" placeholder="Introduza o nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="startDate">Data de Início:</label>
+                        <input type="date" class="form-control" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="details">Detalhes:</label>
+                        <textarea class="form-control" id="details" rows="3" placeholder="Detalhes..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">Data de Término:</label>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="saveChangesButton">Guardar Alterações</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Task Modal -->
+<div class="modal fade" id="addTask" tabindex="-1" role="dialog" aria-labelledby="addTask" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Adicionar Tarefa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="projectSelect">Projeto:</label>
+                        <select class="form-control" id="projectSelect">
+                            <option value="projeto1">Projeto 1</option>
+                            <option value="projeto2">Projeto 2</option>
+                            <option value="projeto3">Projeto 3</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDetails">Detalhes da Tarefa:</label>
+                        <textarea class="form-control" id="taskDetails" rows="3" placeholder="Detalhes..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskStartDate">Data de Início:</label>
+                        <input type="date" class="form-control" id="taskStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="taskEndDate">Data de Término:</label>
+                        <input type="date" class="form-control" id="taskEndDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary">Guardar Alterações</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Adicionar Utilizador</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="username">Nome de Usuário:</label>
+                        <input type="text" class="form-control" id="username" placeholder="Nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-mail:</label>
+                        <input type="email" class="form-control" id="email" placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <label for="isAdmin">Administrador:</label>
+                        <select class="form-control" id="isAdmin">
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary">Guardar Alterações</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('#addProjectModal form').submit(function (e) {
+                e.preventDefault(); // Impede o envio do formulário padrão
+            });
+
+            $('#addProjectModal').on('click', '#saveChangesButton', function () {
+                var projectName = $('#projectName').val();
+                var projectStartDate = $('#startDate').val(); // Obtenha o valor do campo startDate
+                var projectDetails = $('#details').val();
+                var projectEndDate = $('#endDate').val(); // Obtenha o valor do campo endDate
+
+                // Verifique se o campo startDate está vazio
+                if (projectStartDate === '') {
+                    // Exiba uma mensagem de erro ou faça a manipulação adequada
+                    alert('Por favor, preencha o campo Data de Início.');
+                    return; // Pare a execução do código
+                }
+
+                // Verifique se o campo endDate está vazio
+                if (projectEndDate === '') {
+                    // Exiba uma mensagem de erro ou faça a manipulação adequada
+                    alert('Por favor, preencha o campo Data de Término.');
+                    return; // Pare a execução do código
+                }
+                // Crie um objeto com os dados do formulário
+                var formData = {
+                    name: projectName,
+                    description: projectDetails,
+                    startDate: projectStartDate,
+                    endDate: projectEndDate
+                };
+
+                // Envie os dados para o controller usando Ajax
+                $.ajax({
+                    type: 'POST',
+                    url: '/AdminPanel/CreateProject',
+                    data: formData,
+                    success: function (response) {
+                        // Lógica de manipulação de resposta bem-sucedida
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        // Lógica de manipulação de erro
+                        console.log(error);
+                    }
+                });
+            });
+        });
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
+    </script>
+}

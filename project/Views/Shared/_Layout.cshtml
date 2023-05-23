@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/containerHeight.css")
+    @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+    <style>
+        html,
+        body {
+            background-color: #1f2029;
+        }
+
+        .container {
+            height: 100vh; /* set container height to full viewport height */
+            display: flex; /* use flexbox to center child elements */
+            justify-content: center; /* horizontally center child elements */
+            align-items: center; /* vertically center child elements */
+        }
+    </style>
+</head>
+<body>
+    <div class="container containerModified mx-auto">
+        @RenderBody()
+    </div>
+
+   
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    @Scripts.Render("https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js")
+    @Scripts.Render("https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js")
+</body>
+</html>

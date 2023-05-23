@@ -1,0 +1,431 @@
+﻿@model IEnumerable<Project.Models.project>
+
+@{
+    ViewBag.Title = "ManageProjects";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles {
+    <style>
+        tbody tr {
+            opacity: 0.6;
+        }
+
+        .table-container {
+            display: inline-block;
+        }
+
+        tbody tr:hover {
+            opacity: 1;
+        }
+
+        .hoverView {
+            opacity: 0.8;
+            background-color: #222831;
+            color: white;
+            transition: 0.3s;
+            border-radius: 2rem;
+        }
+
+            .hoverView:hover {
+                opacity: 1.2;
+                color: white;
+                border-color: #225841;
+            }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+}
+<div class="text-center mt-3">
+    <div class="table-responsive">
+        <table class="table" style="background-color: #222831;color:white;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome do Projeto</th>
+                    <th>Data de Início</th>
+                    <th>Data de Término</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model == null)
+                {
+                    <p>
+                        error
+                    </p>
+                }
+                else
+                {
+                    foreach (var project in Model)
+                    {
+                        <tr>
+                            <td>@project.IdProject</td>
+                            <td>
+                                @project.name
+                                <button class="btn btn-link btn-sm ml-2" data-toggle="collapse" data-target="#project-@project.IdProject-Tasks"
+                                        onclick="toggleAccordionIcon(this, @project.IdProject)">
+                                    <ion-icon id="project-@project.IdProject-Icon" name="chevron-down-outline"></ion-icon>
+                                </button>
+                            </td>
+                            <td>@project.startDate.ToShortDateString()</td>
+                            <td>@project.endDate.ToShortDateString()</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editProjectModal"
+                                        onclick="editProject(this)" data-project-id="@project.IdProject">
+                                    Editar
+                                </button>
+                                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">Apagar</button>
+                            </td>
+                        </tr>
+                        <tr id="project-@project.IdProject-Tasks" class="collapse">
+                            <td colspan="5">
+                                <table class="table" style="background-color: #1f2029; color: white;">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome da Tarefa</th>
+                                            <th>Detalhes</th>
+                                            <th>Data de Término</th>
+                                            <th>Estado</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var task in project.tasks)
+                                        {
+                                            int status;
+                                            bool isNumeric = int.TryParse(task.status, out status);
+                                            var teste = isNumeric && status > 0 ? "Ativo" : "Inativo";
+                                            <tr>
+                                                <td>@task.name</td>
+                                                <td>@task.description</td>
+                                                <td>@task.deadline.ToShortDateString()</td>
+                                                <td>@teste</td>
+                                                <td>
+                                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editTaskModal"
+                                                            onclick="editTask(this)" data-task-id="@task.IdTask">
+                                                        Editar
+                                                    </button>
+                                                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteTaskModal">Apagar</button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <a href="/AdminPanel/Index" class="btn hoverView" style="background-color: #222831;color:white; ">Go Back</a>
+    </div>
+</div>
+<!-- Modal de Edição de Projeto -->
+<div class="modal fade" id="editProjectModal" tabindex="-1" role="dialog" aria-labelledby="editProjectModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProjectModalLabel">Editar Projeto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulário de Edição do Projeto -->
+                <form>
+                    <div class="form-group">
+                        <label for="editProjectName">Nome do Projeto</label>
+                        <input type="text" class="form-control" id="editProjectName" placeholder="Nome do Projeto">
+                    </div>
+                    <div class="form-group">
+                        <label for="editProjectName">Descrição</label>
+                        <textarea class="form-control" id="editProjectDescription" placeholder="Descrição"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProjectStartDate">Data de Início</label>
+                        <input type="date" class="form-control" id="editProjectStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="editProjectEndDate">Data de Término</label>
+                        <input type="date" class="form-control" id="editProjectEndDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="saveChangesButton">Guardar Alterações</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Edição de Tarefa -->
+<div class="modal fade" id="editTaskModal" tabindex="-1" role="dialog" aria-labelledby="editTaskModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTaskModalLabel">Editar Tarefa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulário de Edição da Tarefa -->
+                <form>
+                    <div class="form-group">
+                        <label for="editTaskName">Nome da Tarefa</label>
+                        <input type="text" class="form-control" id="editTaskName" placeholder="Nome da Tarefa">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTaskDescription">Detalhes</label>
+                        <textarea class="form-control" id="editTaskDescription" rows="3" placeholder="Detalhes da Tarefa"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTaskDeadline">Data de Término</label>
+                        <input type="date" class="form-control" id="editTaskDeadline">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTaskStatus">Estado</label>
+                        <select class="form-control" id="editTaskStatus">
+                            <option value="1">Ativo</option>
+                            <option value="0">Inativo</option>
+                        </select>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja realmente excluir este projeto?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal de Confirmação de Exclusão de Tarefa -->
+<div class="modal fade" id="confirmDeleteTaskModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteTaskModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteTaskModalLabel">Confirmar Exclusão de Tarefa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja realmente excluir esta tarefa?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#editProjectModal form').submit(function (e) {
+                e.preventDefault(); // Impede o envio do formulário padrão
+            });
+
+            $('#editProjectModal').on('click', '#saveChangesButton', function () {
+                var projectName = $('#editProjectName').val();
+                var projectDescription = $('#editProjectDescription').val();
+                var projectStartDate = $('#editProjectStartDate').val();
+                var projectEndDate = $('#editProjectEndDate').val();
+                console.log(projectName);
+
+                // Crie um objeto com os dados do formulário
+                var formData = {
+                    projectName: projectName,
+                    projectDescription: projectDescription,
+                    projectStartDate: projectStartDate,
+                    projectEndDate: projectEndDate
+                };
+
+                // Envie os dados para o controller usando Ajax
+                $.ajax({
+                    type: 'POST',
+                    url: '/AdminPanel/CreateProject',
+                    data: formData,
+                    success: function (response) {
+                        // Lógica de manipulação de resposta bem-sucedida
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        // Lógica de manipulação de erro
+                        console.log(error);
+                    }
+                });
+            });
+        });
+
+        function editProject(button) {
+            var projectId = $(button).data('project-id');
+
+            $(document).ready(function () {
+                $('#editProjectModal .btn-primary').click(function () {
+
+                    var url = '/AdminPanel/UpdateProject/';
+                    console.log(projectId);
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            projectId: projectId,
+                            name: $('#editProjectName').val(),
+                            description: $('#editProjectDescription').val(),
+                            startDate: $('#editProjectStartDate').val(),
+                            endDate: $('#editProjectEndDate').val()
+                        },
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                });
+            });
+
+            $.ajax({
+                url: '/AdminPanel/GetProject',
+                type: 'POST',
+                dataType: 'json',
+                data: { projectId: projectId },
+                success: function (response) {
+
+                    const startDate = new Date(parseInt(response.startDate.replace("/Date(", "").replace(")/", "")));
+                    const endDate = new Date(parseInt(response.endDate.replace("/Date(", "").replace(")/", "")));
+
+                    const formattedStartDate = formatDate(startDate);
+                    const formattedEndDate = formatDate(endDate);
+
+                    $('#editProjectName').val(response.name);
+                    $('#editProjectDescription').val(response.description);
+                    $('#editProjectStartDate').attr('value', formattedStartDate);
+                    $('#editProjectEndDate').attr('value', formattedEndDate);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        // Tasks
+        function editTask(button) {
+            var taskId = $(button).data('task-id');
+            $(document).ready(function () {
+                $('#editTaskModal .btn-primary').click(function () {
+
+                    var url = '/AdminPanel/UpdateTask/';
+                    console.log(taskId);
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            taskId: taskId,
+                            name: $('#editTaskName').val(),
+                            description: $('#editTaskDescription').val(),
+                            deadline: $('#editTaskDeadline').val(),
+                            status: $('#editTaskStatus').val()
+                        },
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                });
+            });
+            $.ajax({
+                url: '/AdminPanel/GetTask',
+                type: 'POST',
+                dataType: 'json',
+                data: { taskId: taskId },
+                success: function (response) {
+                    console.log(response);
+
+                    const deadline = new Date(parseInt(response.deadline.replace("/Date(", "").replace(")/", "")));
+
+                    const formattedDeadline = formatDate(deadline);
+                    console.log("FINISH" + response);
+
+                    $('#editTaskName').val(response.name);
+                    $('#editTaskDescription').val(response.description);
+                    $('#editTaskDeadline').attr('value', formattedDeadline);
+                    let status = response.status == 1 ? "1" : "0";
+                    $('#editTaskStatus').val(status);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function toggleAccordionIcon(button, projectId) {
+            const icon = button.querySelector('ion-icon');
+            const iconId = icon.getAttribute('id');
+
+            if (iconId === `project-${projectId}-Icon`) {
+                icon.setAttribute('name', 'chevron-up-outline');
+                icon.setAttribute('id', `project-${projectId}-IconUp`);
+            } else if (iconId === `project-${projectId}-IconUp`) {
+                icon.setAttribute('name', 'chevron-down-outline');
+                icon.setAttribute('id', `project-${projectId}-Icon`);
+            }
+
+            // Fechar as outras dropdowns
+            const collapseElements = document.querySelectorAll('[id^="project-"][id$="-Tasks"]');
+            collapseElements.forEach((element) => {
+                const elementId = element.getAttribute('id');
+                if (elementId !== `project-${projectId}-Tasks`) {
+                    element.classList.remove('show');
+                    const icon = document.querySelector(`[id="${elementId.replace('Tasks', 'IconUp')}"]`);
+                    if (icon) {
+                        icon.setAttribute('name', 'chevron-down-outline');
+                        icon.setAttribute('id', elementId.replace('Tasks', 'Icon'));
+                    }
+                }
+            });
+        }
+    </script>
+}
