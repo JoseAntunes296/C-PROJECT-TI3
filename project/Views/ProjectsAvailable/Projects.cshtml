@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Project.Models.project>
+﻿@model Project.Models.ViewModal
 @{
     ViewBag.Title = "Projects";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -57,7 +57,7 @@
                 }
                 else
                 {
-                    foreach (var project in Model)
+                    foreach (var project in Model.Projects)
                     {
                         <tr>
                             <td>@project.IdProject</td>
@@ -99,7 +99,7 @@
                         <input type="text" class="form-control" id="PickProjectName" placeholder="Nome do Projeto" disabled>
                     </div>
                     <div class="form-group">
-                        <label for="PickProjectName">Descrição</label>
+                        <label for="PickProjectDescription">Descrição</label>
                         <textarea class="form-control" id="PickProjectDescription" placeholder="Descrição" disabled></textarea>
                     </div>
                     <div class="form-group">
@@ -110,15 +110,17 @@
                         <label for="PickProjectEndDate">Data de Término</label>
                         <input type="date" class="form-control" id="PickProjectEndDate" disabled>
                     </div>
+                    <input type="hidden" id="PickProjectId" value="">
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="saveChangesButton">Pegar Projeto</button>
+                <button type="button" class="btn btn-primary pick-project-button" data-dismiss="modal">Pegar Projeto</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
 </div>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 @section scripts {
@@ -131,23 +133,24 @@
                 type: 'POST',
                 data: { projectId: projectId },
                 success: function (response) {
-
                     const startDate = new Date(parseInt(response.startDate.replace("/Date(", "").replace(")/", "")));
                     const endDate = new Date(parseInt(response.endDate.replace("/Date(", "").replace(")/", "")));
 
                     const formattedStartDate = formatDate(startDate);
                     const formattedEndDate = formatDate(endDate);
 
+                    $('#PickProjectId').val(response.projectId);
                     $('#PickProjectName').val(response.name);
                     $('#PickProjectDescription').val(response.description);
-                    $('#PickProjectStartDate').attr('value', formattedStartDate);
-                    $('#PickProjectEndDate').attr('value', formattedEndDate);
+                    $('#PickProjectStartDate').val(formattedStartDate);
+                    $('#PickProjectEndDate').val(formattedEndDate);
                 },
                 error: function (xhr, status, error) {
                     console.log(error);
                 }
             })
         }
+
         function formatDate(date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -156,5 +159,30 @@
             return `${year}-${month}-${day}`;
         }
 
+        $(document).ready(function () {
+            $("#PickProjectButton").click(function () {
+                var projectId = $('#PickProjectId').val();
+                var userId = $(this).val();
+
+                var data = {
+                    projectId: projectId,
+                    userId: userId
+                };
+
+                $.ajax({
+                    url: '/ProjectsAvailable/PickProject',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function (result) {
+                        // Processar a resposta do servidor aqui
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr);
+                        // Lidar com erros de requisição aqui
+                    }
+                });
+            });
+        });
     </script>
 }
