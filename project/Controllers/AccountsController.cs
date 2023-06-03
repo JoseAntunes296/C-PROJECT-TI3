@@ -7,53 +7,221 @@ using System;
 using System.Net;
 using System.Net.Mail;
 using System.IO;
-using System.Xml.Linq;
+using System.Text;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace Project.Controllers
 {
     public class AccountsController : Controller
     {
         [HttpPost]
-        public ActionResult Login(LoginViewModel credentials)
+        public ActionResult AddUser(string username, string email, int isAdmin, int status)
         {
-            if (credentials.Email == "" || credentials.Password == "" || credentials.Email == null || credentials.Password == null)
+            if (!string.IsNullOrEmpty(email))
             {
-                ModelState.AddModelError("", "Username or Password is wrong");
+                try
+                {
+                    using (var dbContext = new ProjectContext())
+                    {
+                        // Gerar senha aleatória
+                        string password = GenerateRandomPassword();
+
+                        // Gerar token único
+                        string token = GenerateUniqueToken(dbContext);
+
+                        // Código C# para criar e enviar o email
+                        string emailHtml = $@"
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                      <meta charset='UTF-8'>
+                      <title>Bem-vindo!</title>
+                      <style>
+                        /* Estilos CSS */
+                        body {{
+                          font-family: Arial, sans-serif;
+                          background-color: #f1f1f1;
+                          margin: 0;
+                          padding: 0;
+                        }}
+                        .container {{
+                          max-width: 600px;
+                          margin: 0 auto;
+                          padding: 20px;
+                          background-color: #ffffff;
+                          border-radius: 10px;
+                          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                        }}
+                        h1 {{
+                          color: #333333;
+                          text-align: center;
+                        }}
+                        p {{
+                          color: #666666;
+                          margin-bottom: 20px;
+                        }}
+                        .button {{
+                          display: inline-block;
+                          background-color: #4CAF50;
+                          color: #ffffff;
+                          padding: 10px 20px;
+                          text-decoration: none;
+                          border-radius: 4px;
+                        }}
+                      </style>
+                    </head>
+                    <body>
+                      <div class='container'>
+                        <h1>Bem-vindo!</h1>
+                        <p>Prezado(a),</p>
+                        <p>É com grande satisfação que lhe damos as boas-vindas ao nosso projeto em C# Web Application.</p>
+                        <p>Para aceder à sua conta, utilize as seguintes informações de login:</p>
+                        <p>Username: {username}</p>
+                        <p>Password: {password}</p>
+                        <p>Utilize o link para fazer login e explorar todas as funcionalidades disponíveis:</p>
+                        <p style='text-align: center;'>
+                          <a class='button' href='https://localhost:44382' style='color:white'>Aceda ao nosso site</a>
+                        </p>
+                        <p>Seja bem-vindo(a)</p>
+                        <p>Atenciosamente,</p>
+                        <p>A equipa</p>
+                      </div>
+                    </body>
+                    </html>
+                ";
+
+                        SendEmail(email, "Bem-vindo", emailHtml);
+                        string hashedPassword = EncryptPassword(password);
+
+                        user newUser = new user
+                        {
+                            username = username,
+                            email = email,
+                            password = hashedPassword,
+                            token = token,
+                            administrator = isAdmin,
+                            profileImg = "defaultUser.jpg",
+                            userStatus = status
+                        };
+
+                        dbContext.users.Add(newUser);
+                        dbContext.SaveChanges();
+                    }
+
+                    return Json(new { success = true });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { success = false, error = ex.Message });
+                }
+            }
+
+            return Json(new { success = false, error = "Email não fornecido" });
+        }
+        private string GenerateRandomPassword()
+        {
+            // Gerar uma senha aleatória utilizando caracteres alfanuméricos
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            var password = new string(Enumerable.Repeat(chars, 8)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            return password;
+        }
+        private string GenerateUniqueToken(ProjectContext dbContext)
+        {
+            // Gerar um token exclusivo que não esteja presente na base de dados
+            string token;
+            bool isTokenUnique;
+
+            do
+            {
+                token = Guid.NewGuid().ToString();
+                isTokenUnique = !dbContext.users.Any(u => u.token == token);
+            } while (!isTokenUnique);
+
+            return token;
+        }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            using (var client = new SmtpClient())
+            {
+                client.Host = "smtp.gmail.com";
+                client.Port = 587;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.UseDefaultCredentials = false;
+                client.EnableSsl = true;
+                client.Credentials = new NetworkCredential("spamaccot404@gmail.com", "ifxglxtprupxpaov");
+
+                using (var message = new MailMessage(
+                    from: new MailAddress("spamaccot404@gmail.com"),
+                    to: new MailAddress(toEmail)
+                ))
+                {
+                    message.Subject = subject;
+                    message.Body = body;
+                    message.IsBodyHtml = true;
+
+                    client.Send(message);
+                }
+            }
+        }
+        [HttpPost]
+        public async Task<ActionResult> Login(string email, string password)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                return Json(new { success = false, error = "Username or Password is wrong" });
             }
             else
             {
                 using (var entity = new ProjectContext())
                 {
-                    byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(credentials.Password);
+                    byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(password);
                     string encodedPassword = Convert.ToBase64String(passwordBytes);
 
-                    bool userExist = entity.users.Any(x => x.email == credentials.Email && x.password == encodedPassword);
-                    user u = entity.users.FirstOrDefault(x => x.email == credentials.Email && x.password == encodedPassword);
+                    var user = await entity.users.FirstOrDefaultAsync(x => x.email == email);
 
-                    if (userExist)
+                    if (user == null)
                     {
-                        FormsAuthentication.SetAuthCookie(u.email, false);
+                        return Json(new { success = false, error = "User does not exist" });
+                    }
+                    else if (user.password != encodedPassword)
+                    {
+                        return Json(new { success = false, error = "Incorrect password" });
+                    }
+                    else if (user.userStatus == 0)
+                    {
+                        return Json(new { success = false, error = "Account is inactive" });
+                    }
+                    else
+                    {
+                        var userDetails = await entity.users
+                            .Where(x => x.email.Equals(email) && x.password.Equals(encodedPassword))
+                            .Select(x => new { x.IdUser, x.administrator })
+                            .FirstOrDefaultAsync();
 
-                        // Consulta ao banco de dados para obter o ID do usuário
-                        var user = entity.users
-                                .Where(x => x.email.Equals(credentials.Email) && x.password.Equals(encodedPassword))
-                                .Select(x => new { x.IdUser, x.administrator })
-                                .FirstOrDefault();
-
-                        if (user != null)
+                        if (userDetails != null)
                         {
-                            credentials.IdUser = user.IdUser;
-                            credentials.administrator = user.administrator;
+                            Session["IdUser"] = userDetails.IdUser;
+                            Session["administrator"] = userDetails.administrator;
 
-                            return RedirectToAction("Index", "Home", credentials);
+                            return Json(new { success = true });
                         }
                     }
                 }
             }
 
-            return View();
+            return Json(new { success = false, error = "An error occurred" });
         }
-
+        private string EncryptPassword(string password)
+        {
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+            string encodedPassword = Convert.ToBase64String(passwordBytes);
+            return encodedPassword;
+        }
         [HttpPost]
         public ActionResult UpdateUser(HttpPostedFileBase image, int userId, string username, string email)
         {
@@ -78,19 +246,24 @@ namespace Project.Controllers
                         user.email = email;
 
                         dbContext.SaveChanges();
-                    }
 
-                    // Retornar objeto JSON como resposta
-                    return Json(user);
+                        var updatedUser = new
+                        {
+                            IdUser = user.IdUser,
+                            Username = user.username,
+                            Email = user.email,
+                            ProfileImg = user.profileImg
+                        };
+                        return Json(new { success = true, user = updatedUser });
+                    }
                 }
+                return Json(new { success = false, error = "User not found" });
             }
             catch (Exception ex)
             {
-                return View("Error", ex);
+                return Json(new { success = false, error = ex.Message });
             }
         }
-
-
         [HttpGet]
         public ActionResult GetDataUser(int userId)
         {
@@ -107,13 +280,68 @@ namespace Project.Controllers
 
             return Json(null, JsonRequestBehavior.AllowGet);
         }
-
-
         [HttpPost]
         public ActionResult SignOut()
         {
-            FormsAuthentication.SignOut();
-            return RedirectToAction("Index");
+            Session.Clear();
+            return View();
+        }
+        [HttpPost]
+        public ActionResult DeleteUser(int userId)
+        {
+            using (var dbcontext = new ProjectContext())
+            {
+                var user = dbcontext.users.FirstOrDefault(u => u.IdUser == userId);
+
+
+                if (user != null)
+                {
+                    // Verifica se o usuário está associado a projetos ou tarefas
+                    bool hasProjectAssignments = dbcontext.projectAssignments.Any(p => p.userId == userId);
+                    bool hasTasks = dbcontext.tasks.Any(t => t.UserTaskId == userId);
+
+                    if (hasProjectAssignments || hasTasks)
+                    {
+                        // Atualiza as associações para null na tabela de tarefas
+                        if (hasTasks)
+                        {
+                            var tasks = dbcontext.tasks.Where(t => t.UserTaskId == userId);
+                            foreach (var task in tasks)
+                            {
+                                task.UserTaskId = null;
+                            }
+                        }
+
+                        // Remove as associações na tabela de atribuições de projeto
+                        if (hasProjectAssignments)
+                        {
+                            var projectAssignments = dbcontext.projectAssignments.Where(pa => pa.userId == userId);
+                            dbcontext.projectAssignments.RemoveRange(projectAssignments);
+                        }
+
+                        // Remove o usuário do banco de dados
+                        dbcontext.users.Remove(user);
+                        dbcontext.SaveChanges();
+
+                        // Retorna uma resposta JSON indicando que a exclusão foi bem-sucedida
+                        return Json(new { success = true });
+                    }
+                    else
+                    {
+                        // Remove o usuário do banco de dados
+                        dbcontext.users.Remove(user);
+                        dbcontext.SaveChanges();
+
+                        // Retorna uma resposta JSON indicando que a exclusão foi bem-sucedida
+                        return Json(new { success = true });
+                    }
+                }
+                else
+                {
+                    // Retorna uma resposta JSON indicando que o usuário não foi encontrado
+                    return Json(new { success = false, message = "Usuário não encontrado." });
+                }
+            }
         }
     }
 }

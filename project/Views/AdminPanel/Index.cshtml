@@ -29,71 +29,98 @@
 </style>
 <div class="row text-center">
     @{
-
-        bool isLoggedIn = true;
-        if (string.IsNullOrWhiteSpace(User.Identity.Name))
+        if (Session["IdUser"] != null && Session["administrator"] != null)
         {
-            isLoggedIn = false;
-        }
-
-        if (isLoggedIn)
-        {
-            <div class="col-md-3 col-sm-6 ">
-                <a href="/Home/Index" class="btn hoverView" style="width: 13rem; height: 8rem;">
-                    <div class="card-body">
-                        <ion-icon size="large" name="arrow-undo-outline"></ion-icon>
-                        <h5 class="card-title">Voltar atrás</h5>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3 col-sm-6 ">
-                <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addProjectModal">
-                    <div class="card-body">
-                        <ion-icon size="large" name="receipt-outline"></ion-icon>
-                        <h5 class="card-title">Adicionar Projectos</h5>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-md-3 col-sm-6 ">
-                <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addTask">
-                    <div class="card-body">
-                        <ion-icon size="large" name="receipt-outline"></ion-icon>
-                        <h5 class="card-title">Adicionar Tarefas</h5>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3 col-sm-6 ">
-                <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addUser">
-                    <div class="card-body">
-                        <ion-icon size="large" name="receipt-outline"></ion-icon>
-                        <h5 class="card-title">Adicionar Utilizadores</h5>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3 col-sm-6 ">
-                <a href="/AdminPanel/ManageProjects" class="btn hoverView" style="width: 13rem; height: 8rem;">
-                    <div class="card-body">
-                        <ion-icon size="large" name="settings-outline"></ion-icon>
-                        <h5 class="card-title">Editar Projetos</h5>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3 col-sm-6 ">
-                <a href="/AdminPanel/ManageUsers" class="btn hoverView" style="width: 13rem; height: 8rem;">
-                    <div class="card-body">
-                        <ion-icon size="large" name="settings-outline"></ion-icon>
-                        <h5 class="card-title">Editar Utilizadores</h5>
-                    </div>
-                </a>
-            </div>
+            if ((int)Session["administrator"] != 1)
+            {
+                Response.Redirect("/Home/Index");
+            }
         }
         else
         {
-            Response.Redirect("~/Home/Index");
+            Response.Redirect("/Home/Index");
         }
     }
-
+    <div class="col-md-3 col-sm-6 ">
+        <a href="/Home/Index" class="btn hoverView" style="width: 13rem; height: 8rem;">
+            <div class="card-body">
+                <ion-icon size="large" name="arrow-undo-outline"></ion-icon>
+                <h5 class="card-title">Voltar atrás</h5>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-sm-6 ">
+        <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addProjectModal">
+            <div class="card-body">
+                <ion-icon size="large" name="receipt-outline"></ion-icon>
+                <h5 class="card-title">Adicionar Projectos</h5>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addTaskModal">
+            <div class="card-body">
+                <ion-icon size="large" name="receipt-outline"></ion-icon>
+                <h5 class="card-title">Adicionar Tarefas</h5>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-sm-6 ">
+        <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addUserModal">
+            <div class="card-body">
+                <ion-icon size="large" name="receipt-outline"></ion-icon>
+                <h5 class="card-title">Adicionar Utilizadores</h5>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-sm-6 ">
+        <a href="/AdminPanel/ManageProjects" class="btn hoverView" style="width: 13rem; height: 8rem;">
+            <div class="card-body">
+                <ion-icon size="large" name="settings-outline"></ion-icon>
+                <h5 class="card-title">Editar Projetos</h5>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-sm-6 ">
+        <a href="/AdminPanel/ManageUsers" class="btn hoverView" style="width: 13rem; height: 8rem;">
+            <div class="card-body">
+                <ion-icon size="large" name="settings-outline"></ion-icon>
+                <h5 class="card-title">Editar Utilizadores</h5>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-sm-6 ">
+        <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#downloadsModal">
+            <div class="card-body">
+                <ion-icon size="large" name="settings-outline"></ion-icon>
+                <h5 class="card-title">Downloads</h5>
+            </div>
+        </a>
+    </div>
+</div>
+<!-- Downloads Modal -->
+<div class="modal fade" id="downloadsModal" tabindex="-1" role="dialog" aria-labelledby="downloadsModal" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Downloads</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="color:white">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <button type="button" class="btn btn-lg btn-block" style="background-color: #222831;color:white">Projetos e tarefas - Word</button>
+                <button type="button" class="btn btn-lg btn-block" style="background-color: #222831;color:white">Projetos e tarefas - Pdf</button>
+                <button type="button" class="btn btn-lg btn-block" style="background-color: #222831;color:white">Utilizadores - Word</button>
+                <button type="button" class="btn btn-lg btn-block" style="background-color: #222831;color:white">Utilizadores - Pdf</button>
+                <button type="button" class="btn btn-lg btn-block" style="background-color: #222831;color:white">Total de Projetos e tarefas - Excel</button>
+                <button type="button" class="btn btn-lg btn-block" style="background-color: #222831;color:white">Total de Utilizadores - Excel</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- Add Project Modal -->
 <div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="addProject" aria-hidden="true" style="background-color: #1f2029;">
@@ -102,22 +129,22 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Adicionar Projeto</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form>
                     <div class="form-group">
                         <label for="projectName">Nome do Projeto:</label>
-                        <input type="text" class="form-control" id="projectName" placeholder="Introduza o nome">
+                        <input type="text" class="form-control" id="projectName" placeholder="Introduza o nome" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="details">Detalhes:</label>
+                        <textarea class="form-control" id="details" rows="3" placeholder="Detalhes..." maxlength="255"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="startDate">Data de Início:</label>
                         <input type="date" class="form-control" id="startDate">
-                    </div>
-                    <div class="form-group">
-                        <label for="details">Detalhes:</label>
-                        <textarea class="form-control" id="details" rows="3" placeholder="Detalhes..."></textarea>
                     </div>
                     <div class="form-group">
                         <label for="endDate">Data de Término:</label>
@@ -132,15 +159,14 @@
         </div>
     </div>
 </div>
-
 <!-- Add Task Modal -->
-<div class="modal fade" id="addTask" tabindex="-1" role="dialog" aria-labelledby="addTask" aria-hidden="true" style="background-color: #1f2029;">
+<div class="modal fade" id="addTaskModal" tabindex="-1" role="dialog" aria-labelledby="addTaskModalLabel" aria-hidden="true" style="background-color: #1f2029;">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1f2029; color:white;">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Adicionar Tarefa</h5>
+                <h5 class="modal-title" id="addTaskModalLabel">Adicionar Tarefa</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -148,18 +174,16 @@
                     <div class="form-group">
                         <label for="projectSelect">Projeto:</label>
                         <select class="form-control" id="projectSelect">
-                            <option value="projeto1">Projeto 1</option>
-                            <option value="projeto2">Projeto 2</option>
-                            <option value="projeto3">Projeto 3</option>
+                            <option value="">Selecione um projeto</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="taskDetails">Detalhes da Tarefa:</label>
-                        <textarea class="form-control" id="taskDetails" rows="3" placeholder="Detalhes..."></textarea>
+                        <label for="taskName">Nome da tarefa:</label>
+                        <input class="form-control" id="taskName" placeholder="Nome..." maxlength="50" />
                     </div>
                     <div class="form-group">
-                        <label for="taskStartDate">Data de Início:</label>
-                        <input type="date" class="form-control" id="taskStartDate">
+                        <label for="taskDetails">Detalhes da Tarefa:</label>
+                        <textarea class="form-control" id="taskDetails" rows="3" placeholder="Detalhes..." maxlength="144"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="taskEndDate">Data de Término:</label>
@@ -169,35 +193,41 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary">Guardar Alterações</button>
+                <button type="button" class="btn btn-primary" onclick="saveTask()">Guardar Alterações</button>
             </div>
         </div>
     </div>
 </div>
-
 <!-- Add User Modal -->
-<div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="background-color: #1f2029;">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1f2029; color:white;">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Adicionar Utilizador</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form>
                     <div class="form-group">
                         <label for="username">Nome de Usuário:</label>
-                        <input type="text" class="form-control" id="username" placeholder="Nome">
+                        <input type="text" class="form-control" id="username" placeholder="Username" maxlength="10" min="3">
                     </div>
                     <div class="form-group">
                         <label for="email">E-mail:</label>
-                        <input type="email" class="form-control" id="email" placeholder="Email">
+                        <input type="email" class="form-control" id="email" placeholder="Email" maxlength="50" min="3">
                     </div>
                     <div class="form-group">
-                        <label for="isAdmin">Administrador:</label>
+                        <label for="isAdmin">Tipo de Utilizador:</label>
                         <select class="form-control" id="isAdmin">
+                            <option value="1">Administrador</option>
+                            <option value="0">Padrão</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Estado:</label>
+                        <select class="form-control" id="status">
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
                         </select>
@@ -206,43 +236,237 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary">Guardar Alterações</button>
+                <button type="button" class="btn btn-primary" id="UserSaveChange">Guardar Alterações</button>
             </div>
         </div>
     </div>
 </div>
-
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
 @section scripts{
     <script>
+        //downloads
+        $(document).ready(function () {
+            //GenerateProjectsTasksWord
+            $("#downloadsModal").on("click", ".btn-block:eq(0)", function () {
+                $.ajax({
+                    url: "/AdminPanel/GenerateProjectsTasksWord",
+                    type: "GET",
+                    success: function (response) {
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            });
+            //GenerateProjectsTasksPDF
+            $("#downloadsModal").on("click", ".btn-block:eq(1)", function () {
+                $.ajax({
+                    url: "/AdminPanel/GenerateProjectsTasksPDF",
+                    type: "GET",
+                    success: function (response) {
+                        var pdfUrl = response.url;
+                        window.open(pdfUrl, "_blank");
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            });
+            //GenerateUsersWord
+            $("#downloadsModal").on("click", ".btn-block:eq(2)", function () {
+                $.ajax({
+                    url: "/AdminPanel/GenerateUsersWord",
+                    type: "GET",
+                    success: function (response) {
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            });
+            //GenerateUsersPDF
+            $("#downloadsModal").on("click", ".btn-block:eq(3)", function () {
+                // Faça a chamada AJAX para gerar o PDF
+                $.ajax({
+                    url: "/AdminPanel/GenerateUsersPDF",
+                    type: "GET",
+                    success: function (response) {
+                        // Se a chamada for bem-sucedida, abra uma nova janela com o PDF gerado
+                        var pdfUrl = response.url;
+
+                        // Abra uma nova janela com o URL do PDF
+                        window.open(pdfUrl, "_blank");
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            });
+            //GenerateProjectTasksExcel
+            $("#downloadsModal").on("click", ".btn-block:eq(4)", function () {
+                // Faça a chamada AJAX para gerar o PDF
+                $.ajax({
+                    url: "/AdminPanel/GenerateProjectTasksExcel",
+                    type: "GET",
+                    success: function (response) {
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            $("#downloadsModal").on("click", ".btn-block:eq(5)", function () {
+                // Faça a chamada AJAX para gerar o PDF
+                $.ajax({
+                    url: "/AdminPanel/GenerateUsersPDF",
+                    type: "GET",
+                    success: function (response) {
+                        // Se a chamada for bem-sucedida, abra uma nova janela com o PDF gerado
+                        var pdfUrl = response.url;
+
+                        // Abra uma nova janela com o URL do PDF
+                        window.open(pdfUrl, "_blank");
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+        });
+
+
+        function formatDate(dateString) {
+            var date = new Date(dateString);
+            var year = date.getFullYear();
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
+        $(document).ready(function () {
+            $('#addTaskModal').on('show.bs.modal', function () {
+                loadProjects();
+            });
+        });
+
+        function loadProjects() {
+            $.ajax({
+                url: '/AdminPanel/GetProjects',
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    console.log(response);
+                    var projectSelect = $('#projectSelect');
+                    projectSelect.empty();
+
+                    projectSelect.append('<option value="">Selecione um projeto</option>');
+
+                    for (var i = 0; i < response.length; i++) {
+                        var project = response[i];
+                        projectSelect.append('<option value="' + project.IdProject + '">' + project.name + '</option>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr);
+                }
+            });
+        }
+
+        function saveTask() {
+            var projectId = $('#projectSelect').val();
+            var taskDetails = $('#taskDetails').val();
+            var taskEndDate = formatDate($('#taskEndDate').val());
+            var taskName = $('#taskName').val();
+
+            if (projectId && taskName && taskDetails && taskEndDate) {
+                $.ajax({
+                    url: '/AdminPanel/SaveTask',
+                    type: 'POST',
+                    data: {
+                        projectId: projectId,
+                        taskDetails: taskDetails,
+                        taskName: taskName,
+                        status: '1',
+                        taskEndDate: taskEndDate
+                    },
+                    success: function (response) {
+                        alert('Tarefa salva com sucesso!');
+                        $('#taskDetails').val('');
+                        $('#taskEndDate').val('');
+
+                        $('#addTaskModal').modal('hide');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        }
+
+        $(document).ready(function () {
+            $('#addUserModal form').submit(function (e) {
+                e.preventDefault();
+            });
+
+            $('#addUserModal').on('click', '#UserSaveChange', function () {
+                var username = $('#username').val();
+                var email = $('#email').val();
+                var isAdmin = $('#isAdmin').val();
+                var status = $('#status').val();
+
+                var formData = {
+                    username: username,
+                    email: email,
+                    isAdmin: isAdmin,
+                    status: status
+                };
+                console.log(email);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Accounts/AddUser',
+                    data: formData,
+                    success: function (result) {
+                        if (result.success) {
+                            alert('Usuário adicionado com sucesso!');
+                            $('#addUser').modal('hide');
+                        } else {
+                            alert('Ocorreu um erro ao adicionar o usuário.');
+                        }
+                    },
+                    error: function () {
+                        alert('Ocorreu um erro na chamada Ajax.');
+                    }
+                });
+            });
+        });
+
         $(document).ready(function () {
             $('#addProjectModal form').submit(function (e) {
-                e.preventDefault(); // Impede o envio do formulário padrão
+                e.preventDefault();
             });
 
             $('#addProjectModal').on('click', '#saveChangesButton', function () {
                 var projectName = $('#projectName').val();
-                var projectStartDate = $('#startDate').val(); // Obtenha o valor do campo startDate
+                var projectStartDate = $('#startDate').val();
                 var projectDetails = $('#details').val();
-                var projectEndDate = $('#endDate').val(); // Obtenha o valor do campo endDate
+                var projectEndDate = $('#endDate').val();
 
-                // Verifique se o campo startDate está vazio
                 if (projectStartDate === '') {
-                    // Exiba uma mensagem de erro ou faça a manipulação adequada
                     alert('Por favor, preencha o campo Data de Início.');
-                    return; // Pare a execução do código
+                    return;
                 }
 
-                // Verifique se o campo endDate está vazio
                 if (projectEndDate === '') {
-                    // Exiba uma mensagem de erro ou faça a manipulação adequada
                     alert('Por favor, preencha o campo Data de Término.');
-                    return; // Pare a execução do código
+                    return;
                 }
-                // Crie um objeto com os dados do formulário
                 var formData = {
                     name: projectName,
                     description: projectDetails,
@@ -250,30 +474,19 @@
                     endDate: projectEndDate
                 };
 
-                // Envie os dados para o controller usando Ajax
                 $.ajax({
                     type: 'POST',
                     url: '/AdminPanel/CreateProject',
                     data: formData,
                     success: function (response) {
-                        // Lógica de manipulação de resposta bem-sucedida
                         console.log(response);
                     },
                     error: function (error) {
-                        // Lógica de manipulação de erro
                         console.log(error);
                     }
                 });
             });
         });
-
-        function formatDate(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-
-            return `${year}-${month}-${day}`;
-        }
 
     </script>
 }

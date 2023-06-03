@@ -1,74 +1,163 @@
-﻿@model IEnumerable<Project.Models.ProjectAssignmentsUser>
+﻿@model IEnumerable<Project.Models.project>
 
 @{
     ViewBag.Title = "UserProgAssign";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@if (Model is null || Model.Count() <= 0)
+@section styles {
+    <style>
+        tbody tr {
+            opacity: 0.6;
+        }
+
+        .table-container {
+            display: inline-block;
+        }
+
+        tbody tr:hover {
+            opacity: 1;
+        }
+
+        .hoverView {
+            opacity: 0.8;
+            background-color: #222831;
+            color: white;
+            transition: 0.3s;
+            border-radius: 2rem;
+        }
+
+            .hoverView:hover {
+                opacity: 1.2;
+                color: white;
+                border-color: #225841;
+            }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+}
+
+@if (Model is null)
 {
-    <p style="color:white">Não existem projectos criados.</p>
+    <p style="color:white">Não estás em nenhum projeto.</p>
 }
 else
 {
-    <table class="table table-striped" style="color:white;">
-        <thead>
-            <tr>
-                <th>Projeto</th>
-                <th>Tarefa</th>
-                <th>Começou em:</th>
-                <th>Acaba em:</th>
-                <th>Status</th>
-                <th>Detalhes</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var ProjectDetails in Model)
-            {
-                <tr>
-                    <td>@ProjectDetails.project.name</td>
-                    <td>@ProjectDetails.project.description</td>
-                    <td>@ProjectDetails.project.startDate</td>
-                    <td>@ProjectDetails.project.endDate</td>
-                    <td><span class="badge badge-warning">In Progress</span></td>
-                    <td>
-                        <button type="button"
-                                class="btn btn-primary"
-                                id="taskButton"
-                                onclick="">
-                            Primary
-                        </button>
-                    </td>
-                </tr>
+    <div class="text-center mt-3">
+        <div class="table-responsive">
+            <table class="table table-striped" style="background-color: #222831;color:white;">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Projeto</th>
+                        <th>Detalhes</th>
+                        <th>Começou em:</th>
+                        <th>Acaba em:</th>
+                        <th>Status</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var projectDetails in Model)
+                    {
+                        DateTime dataAtual = DateTime.Now;
+                        int comparacao = DateTime.Compare(projectDetails.endDate, dataAtual.Date);
+                        string resultado = (comparacao > 0) ? "Em Progresso" : "Finalizado";
+                        string classeCss = (resultado == "Finalizado") ? "danger" : "warning";
+                        <tr>
+                            <td>@projectDetails.IdProject</td>
+                            <td>
+                                @projectDetails.name
+                                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-toggle="modal" data-target="#editProjectModal"
+                                        onclick="editProject(this)" data-project-id="@projectDetails.IdProject">
+                                    <ion-icon id="project-@projectDetails.IdProject-Icon" name="chevron-down-outline"></ion-icon>
+                                </button>
+                            </td>
+                            <td>@projectDetails.description</td>
+                            <td>@projectDetails.startDate.ToShortDateString()</td>
+                            <td>@projectDetails.endDate.ToShortDateString()</td>
+                            <td><span class="badge badge-@classeCss">@resultado</span></td>
+                            <td>
+                                <button class="btn hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#detailsModal">
+                                    Detalhes
+                                </button>
+                            </td>
+                        </tr>
+                        <tr id="project-@projectDetails.IdProject-Tasks" class="collapse">
+                            <td colspan="7">
+                                <table class="table" style="background-color: #1f2029; color: white;">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome da Tarefa</th>
+                                            <th>Detalhes</th>
+                                            <th>Data de Término</th>
+                                            <th>Estado</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Loop through tasks -->
+                                        @foreach (var task in projectDetails.tasks)
+                                        {
+                                            int status;
+                                            bool isNumeric = int.TryParse(task.status, out status);
+                                            var teste = isNumeric && status > 0 ? "Ativo" : "Inativo";
+                                            <tr>
+                                                <td>@task.name</td>
+                                                <td>@task.description</td>
+                                                <td>@task.deadline.ToShortDateString()</td>
+                                                <td>@teste</td>
+                                                <td>
+                                                    <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#editTaskModal"
+                                                            onclick="editTask(this)" data-task-id="@task.IdTask">
+                                                        Editar
+                                                    </button>
+                                                    <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#confirmDeleteTaskModal">Apagar</button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <a href="/Home/Index" class="btn hoverView" style="background-color: #222831;color:white; ">Go Back</a>
+        </div>
+    </div>
+}
+@section scripts{
+    <script>
+        function toggleAccordionIcon(button, projectId) {
+            const icon = button.querySelector('ion-icon');
+            const iconId = icon.getAttribute('id');
+
+            if (iconId === `project-${projectId}-Icon`) {
+                icon.setAttribute('name', 'chevron-up-outline');
+                icon.setAttribute('id', `project-${projectId}-IconUp`);
+            } else if (iconId === `project-${projectId}-IconUp`) {
+                icon.setAttribute('name', 'chevron-down-outline');
+                icon.setAttribute('id', `project-${projectId}-Icon`);
             }
-            <tr>
-                <td>Task 2</td>
-                <td>Nullam vitae urna eu risus egestas consectetur.</td>
-                <td>2023-04-20</td>
-                <td><span class="badge badge-success">Completed</span></td>
-                <td>
-                    <button type="button"
-                            class="btn btn-primary"
-                            id="taskButton"
-                            onclick="">
-                        Primary
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>Task 3</td>
-                <td>Proin semper sapien eu elit consectetur, vitae suscipit turpis suscipit.</td>
-                <td>2023-04-30</td>
-                <td><span class="badge badge-danger">Overdue</span></td>
-                <td>
-                    <button type="button"
-                            class="btn btn-primary"
-                            id="taskButton"
-                            onclick="">
-                        Primary
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+
+            // Fechar as outras dropdowns
+            const collapseElements = document.querySelectorAll('[id^="project-"][id$="-Tasks"]');
+            collapseElements.forEach((element) => {
+                const elementId = element.getAttribute('id');
+                if (elementId !== `project-${projectId}-Tasks`) {
+                    element.classList.remove('show');
+                    const icon = document.querySelector(`[id="${elementId.replace('Tasks', 'IconUp')}"]`);
+                    if (icon) {
+                        icon.setAttribute('name', 'chevron-down-outline');
+                        icon.setAttribute('id', elementId.replace('Tasks', 'Icon'));
+                    }
+                }
+            });
+        }
+    </script>
 }

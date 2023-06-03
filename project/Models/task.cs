@@ -20,7 +20,7 @@ namespace Project.Models
         public System.DateTime deadline { get; set; }
         public string status { get; set; }
         public int projectId { get; set; }
-        public int UserTaskId { get; set; }
+        public Nullable<int> UserTaskId { get; set; }
     
         public virtual project project { get; set; }
         public virtual user user { get; set; }

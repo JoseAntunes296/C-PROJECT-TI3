@@ -37,6 +37,19 @@
         }
     </style>
 }
+@{
+    if (Session["IdUser"] != null && Session["administrator"] != null)
+    {
+        if ((int)Session["administrator"] != 1)
+        {
+            Response.Redirect("/Home/Index");
+        }
+    }
+    else
+    {
+        Response.Redirect("/Home/Index");
+    }
+}
 <div class="text-center mt-3">
     <div class="table-responsive">
         <table class="table" style="background-color: #222831;color:white;">
@@ -72,11 +85,11 @@
                             <td>@project.startDate.ToShortDateString()</td>
                             <td>@project.endDate.ToShortDateString()</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editProjectModal"
+                                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-toggle="modal" data-target="#editProjectModal"
                                         onclick="editProject(this)" data-project-id="@project.IdProject">
                                     Editar
                                 </button>
-                                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal">Apagar</button>
+                                <button class="btn hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#confirmDeleteModal">Apagar</button>
                             </td>
                         </tr>
                         <tr id="project-@project.IdProject-Tasks" class="collapse">
@@ -103,11 +116,11 @@
                                                 <td>@task.deadline.ToShortDateString()</td>
                                                 <td>@teste</td>
                                                 <td>
-                                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editTaskModal"
+                                                    <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#editTaskModal"
                                                             onclick="editTask(this)" data-task-id="@task.IdTask">
                                                         Editar
                                                     </button>
-                                                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteTaskModal">Apagar</button>
+                                                    <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#confirmDeleteTaskModal">Apagar</button>
                                                 </td>
                                             </tr>
                                         }
@@ -131,7 +144,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="editProjectModalLabel">Editar Projeto</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -170,7 +183,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="editTaskModalLabel">Editar Tarefa</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -214,7 +227,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -234,7 +247,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmDeleteTaskModalLabel">Confirmar Exclusão de Tarefa</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -252,68 +265,28 @@
 
 @section scripts {
     <script>
-        $(document).ready(function () {
-            $('#editProjectModal form').submit(function (e) {
-                e.preventDefault(); // Impede o envio do formulário padrão
-            });
-
-            $('#editProjectModal').on('click', '#saveChangesButton', function () {
-                var projectName = $('#editProjectName').val();
-                var projectDescription = $('#editProjectDescription').val();
-                var projectStartDate = $('#editProjectStartDate').val();
-                var projectEndDate = $('#editProjectEndDate').val();
-                console.log(projectName);
-
-                // Crie um objeto com os dados do formulário
-                var formData = {
-                    projectName: projectName,
-                    projectDescription: projectDescription,
-                    projectStartDate: projectStartDate,
-                    projectEndDate: projectEndDate
-                };
-
-                // Envie os dados para o controller usando Ajax
-                $.ajax({
-                    type: 'POST',
-                    url: '/AdminPanel/CreateProject',
-                    data: formData,
-                    success: function (response) {
-                        // Lógica de manipulação de resposta bem-sucedida
-                        console.log(response);
-                    },
-                    error: function (error) {
-                        // Lógica de manipulação de erro
-                        console.log(error);
-                    }
-                });
-            });
-        });
-
         function editProject(button) {
             var projectId = $(button).data('project-id');
 
-            $(document).ready(function () {
-                $('#editProjectModal .btn-primary').click(function () {
-
-                    var url = '/AdminPanel/UpdateProject/';
-                    console.log(projectId);
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: {
-                            projectId: projectId,
-                            name: $('#editProjectName').val(),
-                            description: $('#editProjectDescription').val(),
-                            startDate: $('#editProjectStartDate').val(),
-                            endDate: $('#editProjectEndDate').val()
-                        },
-                        success: function (response) {
-                            console.log(response);
-                        },
-                        error: function (xhr, status, error) {
-                            console.log(xhr.responseText);
-                        }
-                    });
+            $('#editProjectModal .btn-primary').click(function () {
+                var url = '/AdminPanel/UpdateProject/';
+                console.log(projectId);
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        projectId: projectId,
+                        name: $('#editProjectName').val(),
+                        description: $('#editProjectDescription').val(),
+                        startDate: $('#editProjectStartDate').val(),
+                        endDate: $('#editProjectEndDate').val()
+                    },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
                 });
             });
 
@@ -323,7 +296,6 @@
                 dataType: 'json',
                 data: { projectId: projectId },
                 success: function (response) {
-
                     const startDate = new Date(parseInt(response.startDate.replace("/Date(", "").replace(")/", "")));
                     const endDate = new Date(parseInt(response.endDate.replace("/Date(", "").replace(")/", "")));
 
@@ -341,33 +313,31 @@
             });
         }
 
-        // Tasks
         function editTask(button) {
             var taskId = $(button).data('task-id');
-            $(document).ready(function () {
-                $('#editTaskModal .btn-primary').click(function () {
 
-                    var url = '/AdminPanel/UpdateTask/';
-                    console.log(taskId);
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: {
-                            taskId: taskId,
-                            name: $('#editTaskName').val(),
-                            description: $('#editTaskDescription').val(),
-                            deadline: $('#editTaskDeadline').val(),
-                            status: $('#editTaskStatus').val()
-                        },
-                        success: function (response) {
-                            console.log(response);
-                        },
-                        error: function (xhr, status, error) {
-                            console.log(xhr.responseText);
-                        }
-                    });
+            $('#editTaskModal .btn-primary').click(function () {
+                var url = '/AdminPanel/UpdateTask/';
+                console.log(taskId);
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        taskId: taskId,
+                        name: $('#editTaskName').val(),
+                        description: $('#editTaskDescription').val(),
+                        deadline: $('#editTaskDeadline').val(),
+                        status: $('#editTaskStatus').val()
+                    },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
                 });
             });
+
             $.ajax({
                 url: '/AdminPanel/GetTask',
                 type: 'POST',
@@ -400,6 +370,7 @@
 
             return `${year}-${month}-${day}`;
         }
+
 
         function toggleAccordionIcon(button, projectId) {
             const icon = button.querySelector('ion-icon');

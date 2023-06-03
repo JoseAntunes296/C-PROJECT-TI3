@@ -1,323 +1,326 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
-	<!-- EF Runtime content -->
-	<edmx:Runtime>
-		<!-- SSDL content -->
-		<edmx:StorageModels>
-			<Schema Namespace="projectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-				<EntityType Name="projectAssignments">
-					<Key>
-						<PropertyRef Name="IdProjectAssigment" />
-					</Key>
-					<Property Name="IdProjectAssigment" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-					<Property Name="userId" Type="int" Nullable="false" />
-					<Property Name="projectId" Type="int" Nullable="false" />
-					<Property Name="status" Type="varchar" MaxLength="10" Nullable="false" />
-				</EntityType>
-				<EntityType Name="projects">
-					<Key>
-						<PropertyRef Name="IdProject" />
-					</Key>
-					<Property Name="IdProject" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-					<Property Name="name" Type="nchar" MaxLength="50" Nullable="false" />
-					<Property Name="description" Type="varchar" MaxLength="255" Nullable="false" />
-					<Property Name="startDate" Type="datetime" Nullable="false" />
-					<Property Name="endDate" Type="datetime" Nullable="false" />
-				</EntityType>
-				<EntityType Name="tasks">
-					<Key>
-						<PropertyRef Name="IdTask" />
-					</Key>
-					<Property Name="IdTask" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-					<Property Name="name" Type="varchar" MaxLength="50" Nullable="false" />
-					<Property Name="description" Type="varchar" MaxLength="144" Nullable="false" />
-					<Property Name="deadline" Type="datetime" Nullable="false" />
-					<Property Name="status" Type="nchar" MaxLength="10" Nullable="false" />
-					<Property Name="projectId" Type="int" Nullable="false" />
-					<Property Name="UserTaskId" Type="int" Nullable="false" />
-				</EntityType>
-				<EntityType Name="users">
-					<Key>
-						<PropertyRef Name="IdUser" />
-					</Key>
-					<Property Name="IdUser" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-					<Property Name="username" Type="nchar" MaxLength="10" Nullable="false" />
-					<Property Name="email" Type="varchar" MaxLength="50" Nullable="false" />
-					<Property Name="password" Type="varchar" MaxLength="50" Nullable="false" />
-					<Property Name="profileImg" Type="varchar" MaxLength="50" />
-					<Property Name="administrator" Type="int" Nullable="false" />
-					<Property Name="token" Type="varchar" MaxLength="100" Nullable="false" />
-				</EntityType>
-				<Association Name="FK__projectAs__proje__3B75D760">
-					<End Role="projects" Type="Self.projects" Multiplicity="1" />
-					<End Role="projectAssignments" Type="Self.projectAssignments" Multiplicity="*" />
-					<ReferentialConstraint>
-						<Principal Role="projects">
-							<PropertyRef Name="IdProject" />
-						</Principal>
-						<Dependent Role="projectAssignments">
-							<PropertyRef Name="projectId" />
-						</Dependent>
-					</ReferentialConstraint>
-				</Association>
-				<Association Name="FK__projectAs__userI__3A81B327">
-					<End Role="users" Type="Self.users" Multiplicity="1" />
-					<End Role="projectAssignments" Type="Self.projectAssignments" Multiplicity="*" />
-					<ReferentialConstraint>
-						<Principal Role="users">
-							<PropertyRef Name="IdUser" />
-						</Principal>
-						<Dependent Role="projectAssignments">
-							<PropertyRef Name="userId" />
-						</Dependent>
-					</ReferentialConstraint>
-				</Association>
-				<Association Name="FK__tasks__projectId__48CFD27E">
-					<End Role="projects" Type="Self.projects" Multiplicity="1" />
-					<End Role="tasks" Type="Self.tasks" Multiplicity="*" />
-					<ReferentialConstraint>
-						<Principal Role="projects">
-							<PropertyRef Name="IdProject" />
-						</Principal>
-						<Dependent Role="tasks">
-							<PropertyRef Name="projectId" />
-						</Dependent>
-					</ReferentialConstraint>
-				</Association>
-				<Association Name="FK__tasks__UserTaskI__47DBAE45">
-					<End Role="users" Type="Self.users" Multiplicity="1" />
-					<End Role="tasks" Type="Self.tasks" Multiplicity="*" />
-					<ReferentialConstraint>
-						<Principal Role="users">
-							<PropertyRef Name="IdUser" />
-						</Principal>
-						<Dependent Role="tasks">
-							<PropertyRef Name="UserTaskId" />
-						</Dependent>
-					</ReferentialConstraint>
-				</Association>
-				<EntityContainer Name="projectModelStoreContainer">
-					<EntitySet Name="projectAssignments" EntityType="Self.projectAssignments" Schema="dbo" store:Type="Tables" />
-					<EntitySet Name="projects" EntityType="Self.projects" Schema="dbo" store:Type="Tables" />
-					<EntitySet Name="tasks" EntityType="Self.tasks" Schema="dbo" store:Type="Tables" />
-					<EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
-					<AssociationSet Name="FK__projectAs__proje__3B75D760" Association="Self.FK__projectAs__proje__3B75D760">
-						<End Role="projects" EntitySet="projects" />
-						<End Role="projectAssignments" EntitySet="projectAssignments" />
-					</AssociationSet>
-					<AssociationSet Name="FK__projectAs__userI__3A81B327" Association="Self.FK__projectAs__userI__3A81B327">
-						<End Role="users" EntitySet="users" />
-						<End Role="projectAssignments" EntitySet="projectAssignments" />
-					</AssociationSet>
-					<AssociationSet Name="FK__tasks__projectId__48CFD27E" Association="Self.FK__tasks__projectId__48CFD27E">
-						<End Role="projects" EntitySet="projects" />
-						<End Role="tasks" EntitySet="tasks" />
-					</AssociationSet>
-					<AssociationSet Name="FK__tasks__UserTaskI__47DBAE45" Association="Self.FK__tasks__UserTaskI__47DBAE45">
-						<End Role="users" EntitySet="users" />
-						<End Role="tasks" EntitySet="tasks" />
-					</AssociationSet>
-				</EntityContainer>
-			</Schema>
-		</edmx:StorageModels>
-		<!-- CSDL content -->
-		<edmx:ConceptualModels>
-			<Schema Namespace="projectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-				<EntityType Name="projectAssignment">
-					<Key>
-						<PropertyRef Name="IdProjectAssigment" />
-					</Key>
-					<Property Name="IdProjectAssigment" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-					<Property Name="userId" Type="Int32" Nullable="false" />
-					<Property Name="projectId" Type="Int32" Nullable="false" />
-					<Property Name="status" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
-					<NavigationProperty Name="project" Relationship="Self.FK__projectAs__proje__3B75D760" FromRole="projectAssignments" ToRole="projects" />
-					<NavigationProperty Name="user" Relationship="Self.FK__projectAs__userI__3A81B327" FromRole="projectAssignments" ToRole="users" />
-				</EntityType>
-				<EntityType Name="project">
-					<Key>
-						<PropertyRef Name="IdProject" />
-					</Key>
-					<Property Name="IdProject" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-					<Property Name="name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
-					<Property Name="description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-					<Property Name="startDate" Type="DateTime" Nullable="false" Precision="3" />
-					<Property Name="endDate" Type="DateTime" Nullable="false" Precision="3" />
-					<NavigationProperty Name="projectAssignments" Relationship="Self.FK__projectAs__proje__3B75D760" FromRole="projects" ToRole="projectAssignments" />
-					<NavigationProperty Name="tasks" Relationship="projectModel.FK__tasks__projectId__48CFD27E" FromRole="project" ToRole="task" />
-				</EntityType>
-				<EntityType Name="task">
-					<Key>
-						<PropertyRef Name="IdTask" />
-					</Key>
-					<Property Name="IdTask" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-					<Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-					<Property Name="description" Type="String" MaxLength="144" FixedLength="false" Unicode="false" Nullable="false" />
-					<Property Name="deadline" Type="DateTime" Precision="3" Nullable="false" />
-					<Property Name="status" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-					<Property Name="projectId" Type="Int32" Nullable="false" />
-					<Property Name="UserTaskId" Type="Int32" Nullable="false" />
-					<NavigationProperty Name="project" Relationship="projectModel.FK__tasks__projectId__48CFD27E" FromRole="task" ToRole="project" />
-					<NavigationProperty Name="user" Relationship="projectModel.FK__tasks__UserTaskI__47DBAE45" FromRole="task" ToRole="user" />
-				</EntityType>
-				<EntityType Name="user">
-					<Key>
-						<PropertyRef Name="IdUser" />
-					</Key>
-					<Property Name="IdUser" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-					<Property Name="username" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-					<Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-					<Property Name="password" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-					<Property Name="profileImg" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-					<Property Name="administrator" Type="Int32" Nullable="false" />
-					<Property Name="token" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-					<NavigationProperty Name="projectAssignments" Relationship="Self.FK__projectAs__userI__3A81B327" FromRole="users" ToRole="projectAssignments" />
-					<NavigationProperty Name="tasks" Relationship="projectModel.FK__tasks__UserTaskI__47DBAE45" FromRole="user" ToRole="task" />
-				</EntityType>
-				<Association Name="FK__projectAs__proje__3B75D760">
-					<End Role="projects" Type="Self.project" Multiplicity="1" />
-					<End Role="projectAssignments" Type="Self.projectAssignment" Multiplicity="*" />
-					<ReferentialConstraint>
-						<Principal Role="projects">
-							<PropertyRef Name="IdProject" />
-						</Principal>
-						<Dependent Role="projectAssignments">
-							<PropertyRef Name="projectId" />
-						</Dependent>
-					</ReferentialConstraint>
-				</Association>
-				<Association Name="FK__projectAs__userI__3A81B327">
-					<End Role="users" Type="Self.user" Multiplicity="1" />
-					<End Role="projectAssignments" Type="Self.projectAssignment" Multiplicity="*" />
-					<ReferentialConstraint>
-						<Principal Role="users">
-							<PropertyRef Name="IdUser" />
-						</Principal>
-						<Dependent Role="projectAssignments">
-							<PropertyRef Name="userId" />
-						</Dependent>
-					</ReferentialConstraint>
-				</Association>
-				<EntityContainer Name="projectEntities" annotation:LazyLoadingEnabled="true">
-					<EntitySet Name="projectAssignments" EntityType="Self.projectAssignment" />
-					<EntitySet Name="projects" EntityType="Self.project" />
-					<EntitySet Name="tasks" EntityType="Self.task" />
-					<EntitySet Name="users" EntityType="Self.user" />
-					<AssociationSet Name="FK__projectAs__proje__3B75D760" Association="Self.FK__projectAs__proje__3B75D760">
-						<End Role="projects" EntitySet="projects" />
-						<End Role="projectAssignments" EntitySet="projectAssignments" />
-					</AssociationSet>
-					<AssociationSet Name="FK__projectAs__userI__3A81B327" Association="Self.FK__projectAs__userI__3A81B327">
-						<End Role="users" EntitySet="users" />
-						<End Role="projectAssignments" EntitySet="projectAssignments" />
-					</AssociationSet>
-					<AssociationSet Name="FK__tasks__projectId__48CFD27E" Association="projectModel.FK__tasks__projectId__48CFD27E">
-						<End Role="project" EntitySet="projects" />
-						<End Role="task" EntitySet="tasks" />
-					</AssociationSet>
-					<AssociationSet Name="FK__tasks__UserTaskI__47DBAE45" Association="projectModel.FK__tasks__UserTaskI__47DBAE45">
-						<End Role="user" EntitySet="users" />
-						<End Role="task" EntitySet="tasks" />
-					</AssociationSet>
-				</EntityContainer>
-				<Association Name="FK__tasks__projectId__48CFD27E">
-					<End Type="projectModel.project" Role="project" Multiplicity="1" />
-					<End Type="projectModel.task" Role="task" Multiplicity="*" />
-					<ReferentialConstraint>
-						<Principal Role="project">
-							<PropertyRef Name="IdProject" />
-						</Principal>
-						<Dependent Role="task">
-							<PropertyRef Name="projectId" />
-						</Dependent>
-					</ReferentialConstraint>
-				</Association>
-				<Association Name="FK__tasks__UserTaskI__47DBAE45">
-					<End Type="projectModel.user" Role="user" Multiplicity="1" />
-					<End Type="projectModel.task" Role="task" Multiplicity="*" />
-					<ReferentialConstraint>
-						<Principal Role="user">
-							<PropertyRef Name="IdUser" />
-						</Principal>
-						<Dependent Role="task">
-							<PropertyRef Name="UserTaskId" />
-						</Dependent>
-					</ReferentialConstraint>
-				</Association>
-			</Schema>
-		</edmx:ConceptualModels>
-		<!-- C-S mapping content -->
-		<edmx:Mappings>
-			<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-				<EntityContainerMapping StorageEntityContainer="projectModelStoreContainer" CdmEntityContainer="projectEntities">
-					<EntitySetMapping Name="projectAssignments">
-						<EntityTypeMapping TypeName="projectModel.projectAssignment">
-							<MappingFragment StoreEntitySet="projectAssignments">
-								<ScalarProperty Name="IdProjectAssigment" ColumnName="IdProjectAssigment" />
-								<ScalarProperty Name="userId" ColumnName="userId" />
-								<ScalarProperty Name="projectId" ColumnName="projectId" />
-								<ScalarProperty Name="status" ColumnName="status" />
-							</MappingFragment>
-						</EntityTypeMapping>
-					</EntitySetMapping>
-					<EntitySetMapping Name="projects">
-						<EntityTypeMapping TypeName="projectModel.project">
-							<MappingFragment StoreEntitySet="projects">
-								<ScalarProperty Name="IdProject" ColumnName="IdProject" />
-								<ScalarProperty Name="name" ColumnName="name" />
-								<ScalarProperty Name="description" ColumnName="description" />
-								<ScalarProperty Name="startDate" ColumnName="startDate" />
-								<ScalarProperty Name="endDate" ColumnName="endDate" />
-							</MappingFragment>
-						</EntityTypeMapping>
-					</EntitySetMapping>
-					<EntitySetMapping Name="tasks">
-						<EntityTypeMapping TypeName="projectModel.task">
-							<MappingFragment StoreEntitySet="tasks">
-								<ScalarProperty Name="IdTask" ColumnName="IdTask" />
-								<ScalarProperty Name="name" ColumnName="name" />
-								<ScalarProperty Name="description" ColumnName="description" />
-								<ScalarProperty Name="deadline" ColumnName="deadline" />
-								<ScalarProperty Name="status" ColumnName="status" />
-								<ScalarProperty Name="projectId" ColumnName="projectId" />
-								<ScalarProperty Name="UserTaskId" ColumnName="UserTaskId" />
-							</MappingFragment>
-						</EntityTypeMapping>
-					</EntitySetMapping>
-					<EntitySetMapping Name="users">
-						<EntityTypeMapping TypeName="projectModel.user">
-							<MappingFragment StoreEntitySet="users">
-								<ScalarProperty Name="IdUser" ColumnName="IdUser" />
-								<ScalarProperty Name="username" ColumnName="username" />
-								<ScalarProperty Name="email" ColumnName="email" />
-								<ScalarProperty Name="password" ColumnName="password" />
-								<ScalarProperty Name="profileImg" ColumnName="profileImg" />
-								<ScalarProperty Name="administrator" ColumnName="administrator" />
-								<ScalarProperty Name="token" ColumnName="token" />
-							</MappingFragment>
-						</EntityTypeMapping>
-					</EntitySetMapping>
-				</EntityContainerMapping>
-			</Mapping>
-		</edmx:Mappings>
-	</edmx:Runtime>
-	<!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
-	<Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
-		<Connection>
-			<DesignerInfoPropertySet>
-				<DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
-			</DesignerInfoPropertySet>
-		</Connection>
-		<Options>
-			<DesignerInfoPropertySet>
-				<DesignerProperty Name="ValidateOnBuild" Value="true" />
-				<DesignerProperty Name="EnablePluralization" Value="true" />
-				<DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
-				<DesignerProperty Name="UseLegacyProvider" Value="false" />
-				<DesignerProperty Name="CodeGenerationStrategy" Value="None" />
-			</DesignerInfoPropertySet>
-		</Options>
-		<!-- Diagram content (shape and connector positions) -->
-		<Diagrams></Diagrams>
-	</Designer>
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="projectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="projectAssignments">
+          <Key>
+            <PropertyRef Name="IdProjectAssigment" />
+          </Key>
+          <Property Name="IdProjectAssigment" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="userId" Type="int" Nullable="false" />
+          <Property Name="projectId" Type="int" Nullable="false" />
+          <Property Name="status" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="projects">
+          <Key>
+            <PropertyRef Name="IdProject" />
+          </Key>
+          <Property Name="IdProject" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="description" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="startDate" Type="datetime" Nullable="false" />
+          <Property Name="endDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tasks">
+          <Key>
+            <PropertyRef Name="IdTask" />
+          </Key>
+          <Property Name="IdTask" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="description" Type="varchar" MaxLength="144" Nullable="false" />
+          <Property Name="deadline" Type="datetime" Nullable="false" />
+          <Property Name="status" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="projectId" Type="int" Nullable="false" />
+          <Property Name="UserTaskId" Type="int" />
+        </EntityType>
+        <EntityType Name="users">
+          <Key>
+            <PropertyRef Name="IdUser" />
+          </Key>
+          <Property Name="IdUser" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="username" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="password" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="profileImg" Type="varchar" MaxLength="50" />
+          <Property Name="administrator" Type="int" Nullable="false" />
+          <Property Name="userStatus" Type="int" Nullable="false" />
+          <Property Name="token" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__projectAs__proje__403A8C7D">
+          <End Role="projects" Type="Self.projects" Multiplicity="1" />
+          <End Role="projectAssignments" Type="Self.projectAssignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="projects">
+              <PropertyRef Name="IdProject" />
+            </Principal>
+            <Dependent Role="projectAssignments">
+              <PropertyRef Name="projectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__projectAs__userI__6477ECF3">
+          <End Role="users" Type="Self.users" Multiplicity="1" />
+          <End Role="projectAssignments" Type="Self.projectAssignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="projectAssignments">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tasks__projectId__3E52440B">
+          <End Role="projects" Type="Self.projects" Multiplicity="1" />
+          <End Role="tasks" Type="Self.tasks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="projects">
+              <PropertyRef Name="IdProject" />
+            </Principal>
+            <Dependent Role="tasks">
+              <PropertyRef Name="projectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tasks__UserTaskI__6E01572D">
+          <End Role="users" Type="Self.users" Multiplicity="0..1" />
+          <End Role="tasks" Type="Self.tasks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="tasks">
+              <PropertyRef Name="UserTaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="projectModelStoreContainer">
+          <EntitySet Name="projectAssignments" EntityType="Self.projectAssignments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="projects" EntityType="Self.projects" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tasks" EntityType="Self.tasks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__projectAs__proje__403A8C7D" Association="Self.FK__projectAs__proje__403A8C7D">
+            <End Role="projects" EntitySet="projects" />
+            <End Role="projectAssignments" EntitySet="projectAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__projectAs__userI__6477ECF3" Association="Self.FK__projectAs__userI__6477ECF3">
+            <End Role="users" EntitySet="users" />
+            <End Role="projectAssignments" EntitySet="projectAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tasks__projectId__3E52440B" Association="Self.FK__tasks__projectId__3E52440B">
+            <End Role="projects" EntitySet="projects" />
+            <End Role="tasks" EntitySet="tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tasks__UserTaskI__6E01572D" Association="Self.FK__tasks__UserTaskI__6E01572D">
+            <End Role="users" EntitySet="users" />
+            <End Role="tasks" EntitySet="tasks" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="projectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="projectAssignment">
+          <Key>
+            <PropertyRef Name="IdProjectAssigment" />
+          </Key>
+          <Property Name="IdProjectAssigment" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="userId" Type="Int32" Nullable="false" />
+          <Property Name="projectId" Type="Int32" Nullable="false" />
+          <Property Name="status" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="project" Relationship="Self.FK__projectAs__proje__403A8C7D" FromRole="projectAssignments" ToRole="projects" />
+          <NavigationProperty Name="user" Relationship="Self.FK__projectAs__userI__6477ECF3" FromRole="projectAssignments" ToRole="users" />
+        </EntityType>
+        <EntityType Name="project">
+          <Key>
+            <PropertyRef Name="IdProject" />
+          </Key>
+          <Property Name="IdProject" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="startDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="endDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="projectAssignments" Relationship="Self.FK__projectAs__proje__403A8C7D" FromRole="projects" ToRole="projectAssignments" />
+          <NavigationProperty Name="tasks" Relationship="Self.FK__tasks__projectId__3E52440B" FromRole="projects" ToRole="tasks" />
+        </EntityType>
+        <EntityType Name="task">
+          <Key>
+            <PropertyRef Name="IdTask" />
+          </Key>
+          <Property Name="IdTask" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="description" Type="String" MaxLength="144" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="deadline" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="status" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="projectId" Type="Int32" Nullable="false" />
+          <Property Name="UserTaskId" Type="Int32" />
+          <NavigationProperty Name="project" Relationship="Self.FK__tasks__projectId__3E52440B" FromRole="tasks" ToRole="projects" />
+          <NavigationProperty Name="user" Relationship="Self.FK__tasks__UserTaskI__6E01572D" FromRole="tasks" ToRole="users" />
+        </EntityType>
+        <EntityType Name="user">
+          <Key>
+            <PropertyRef Name="IdUser" />
+          </Key>
+          <Property Name="IdUser" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="username" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="password" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="profileImg" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="administrator" Type="Int32" Nullable="false" />
+          <Property Name="userStatus" Type="Int32" Nullable="false" />
+          <Property Name="token" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="projectAssignments" Relationship="Self.FK__projectAs__userI__6477ECF3" FromRole="users" ToRole="projectAssignments" />
+          <NavigationProperty Name="tasks" Relationship="Self.FK__tasks__UserTaskI__6E01572D" FromRole="users" ToRole="tasks" />
+        </EntityType>
+        <Association Name="FK__projectAs__proje__403A8C7D">
+          <End Role="projects" Type="Self.project" Multiplicity="1" />
+          <End Role="projectAssignments" Type="Self.projectAssignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="projects">
+              <PropertyRef Name="IdProject" />
+            </Principal>
+            <Dependent Role="projectAssignments">
+              <PropertyRef Name="projectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__projectAs__userI__6477ECF3">
+          <End Role="users" Type="Self.user" Multiplicity="1" />
+          <End Role="projectAssignments" Type="Self.projectAssignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="projectAssignments">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tasks__projectId__3E52440B">
+          <End Role="projects" Type="Self.project" Multiplicity="1" />
+          <End Role="tasks" Type="Self.task" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="projects">
+              <PropertyRef Name="IdProject" />
+            </Principal>
+            <Dependent Role="tasks">
+              <PropertyRef Name="projectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tasks__UserTaskI__6E01572D">
+          <End Role="users" Type="Self.user" Multiplicity="0..1" />
+          <End Role="tasks" Type="Self.task" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="tasks">
+              <PropertyRef Name="UserTaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ProjectContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="projectAssignments" EntityType="Self.projectAssignment" />
+          <EntitySet Name="projects" EntityType="Self.project" />
+          <EntitySet Name="tasks" EntityType="Self.task" />
+          <EntitySet Name="users" EntityType="Self.user" />
+          <AssociationSet Name="FK__projectAs__proje__403A8C7D" Association="Self.FK__projectAs__proje__403A8C7D">
+            <End Role="projects" EntitySet="projects" />
+            <End Role="projectAssignments" EntitySet="projectAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__projectAs__userI__6477ECF3" Association="Self.FK__projectAs__userI__6477ECF3">
+            <End Role="users" EntitySet="users" />
+            <End Role="projectAssignments" EntitySet="projectAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tasks__projectId__3E52440B" Association="Self.FK__tasks__projectId__3E52440B">
+            <End Role="projects" EntitySet="projects" />
+            <End Role="tasks" EntitySet="tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tasks__UserTaskI__6E01572D" Association="Self.FK__tasks__UserTaskI__6E01572D">
+            <End Role="users" EntitySet="users" />
+            <End Role="tasks" EntitySet="tasks" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="projectModelStoreContainer" CdmEntityContainer="ProjectContext">
+          <EntitySetMapping Name="projectAssignments">
+            <EntityTypeMapping TypeName="projectModel.projectAssignment">
+              <MappingFragment StoreEntitySet="projectAssignments">
+                <ScalarProperty Name="IdProjectAssigment" ColumnName="IdProjectAssigment" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+                <ScalarProperty Name="projectId" ColumnName="projectId" />
+                <ScalarProperty Name="status" ColumnName="status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="projects">
+            <EntityTypeMapping TypeName="projectModel.project">
+              <MappingFragment StoreEntitySet="projects">
+                <ScalarProperty Name="IdProject" ColumnName="IdProject" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="startDate" ColumnName="startDate" />
+                <ScalarProperty Name="endDate" ColumnName="endDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tasks">
+            <EntityTypeMapping TypeName="projectModel.task">
+              <MappingFragment StoreEntitySet="tasks">
+                <ScalarProperty Name="IdTask" ColumnName="IdTask" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="deadline" ColumnName="deadline" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="projectId" ColumnName="projectId" />
+                <ScalarProperty Name="UserTaskId" ColumnName="UserTaskId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="users">
+            <EntityTypeMapping TypeName="projectModel.user">
+              <MappingFragment StoreEntitySet="users">
+                <ScalarProperty Name="IdUser" ColumnName="IdUser" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="profileImg" ColumnName="profileImg" />
+                <ScalarProperty Name="administrator" ColumnName="administrator" />
+                <ScalarProperty Name="userStatus" ColumnName="userStatus" />
+                <ScalarProperty Name="token" ColumnName="token" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
 </edmx:Edmx>

@@ -1,5 +1,23 @@
-﻿@model Project.Models.LoginViewModel
-<style>
+﻿<style>
+    .custom-swal {
+        background-color: #222831;
+        color: white;
+    }
+
+    .swal2-confirm {
+        color: white !important;
+        background-color: #1f2029 !important;
+        border-radius: 1rem !important;
+    }
+
+        .swal2-confirm:hover {
+            opacity: 0.8;
+            background-color: #222831;
+            color: white;
+            transition: 0.3s;
+            border-radius: 1rem;
+        }
+
     .hoverView {
         opacity: 0.8;
         background-color: #222831;
@@ -24,14 +42,7 @@
 </style>
 <div class="row text-center">
     @{
-
-        bool isLoggedIn = true;
-        if (string.IsNullOrWhiteSpace(User.Identity.Name))
-        {
-            isLoggedIn = false;
-        }
-
-        if (isLoggedIn)
+        if (Session["IdUser"] != null)
         {
             <div class="col-md-3 col-sm-6">
                 <a href="/Accounts/SignOut" id="SignOut" name="SignOut" class="btn hoverView" style="width: 13rem; height: 8rem;">
@@ -41,7 +52,7 @@
                     </div>
                 </a>
             </div>
-            if (Model.administrator == 1)
+            if ((int)Session["administrator"] == 1)
             {
                 <div class="col-md-3 col-sm-6 ">
                     <a href="/AdminPanel/Index" class="btn hoverView" style="width: 13rem; height: 8rem;">
@@ -52,17 +63,14 @@
                     </a>
                 </div>
             }
-
             <div class="col-md-3 col-sm-6">
-                <a href="/UserInterface/UserProfile" id="Profile" name="Profile" class="btn hoverView" data-toggle="modal" data-target="#userModal" data-userid="@Model.IdUser" style="width: 13rem; height: 8rem;">
+                <a href="/UserInterface/UserProfile" id="Profile" name="Profile" class="btn hoverView" data-toggle="modal" data-target="#userModal" data-userid="@(Convert.ToInt32(Session["IdUser"]))" style="width: 13rem; height: 8rem;">
                     <div class="card-body">
                         <ion-icon size="large" name="settings-outline"></ion-icon>
                         <h5 class="card-title">Perfil</h5>
                     </div>
                 </a>
             </div>
-
-
             <div class="col-md-3 col-sm-6 ">
                 <a href="/UserInterface/UserProjectsDetails" class="btn hoverView" style="width: 13rem; height: 8rem;">
                     <div class="card-body">
@@ -144,7 +152,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="userModalLabel">User Profile</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -181,7 +189,6 @@
 @section scripts {
     <script>
         $(document).ready(function () {
-            // Submit form data via AJAX
             $('#authenticationModal form').submit(function (e) {
                 e.preventDefault();
                 var $form = $(this);
@@ -194,11 +201,25 @@
                     method: "POST",
                     data: data,
                     success: function (response) {
-                        $('#authenticationModal').modal('hide');
-                        location.reload();
-                    },
-                    error: function (xhr, status, error) {
-                        console.log(xhr.responseText);
+                        console.log(response);
+                        if (response.success === false) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: response.error,
+                                customClass: 'custom-swal'
+                            })
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Bem Vindo!',
+                                text: 'Autenticado com sucesso',
+                                customClass: 'custom-swal'
+                            }).then(function () {
+                                $('#authenticationModal').modal('hide');
+                                location.reload();
+                            });
+                        }
                     }
                 });
             });
@@ -206,13 +227,25 @@
             // SignOut
             $("#SignOut").click(function (event) {
                 event.preventDefault();
-                fetch("/Accounts/SignOut", { method: "POST" })
-                    .then(function (response) {
-                        window.location.href = "/Home/Index";
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                    });
+
+                Swal.fire({
+                    title: "Signout",
+                    text: "Signout com sucesso",
+                    icon: "success",
+                    customClass: 'custom-swal',
+                    confirmButtonText: "OK",
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch("/Accounts/SignOut", { method: "POST" })
+                            .then(function (response) {
+                                window.location.href = "/Home/Index";
+                            })
+                            .catch(function (error) {
+                                console.error(error);
+                            });
+                    }
+                });
             });
 
             $('#selectImageBtn').click(function () {
@@ -247,16 +280,14 @@
                     contentType: false,
                     processData: false,
                     success: function (response) {
-                        Swal.fire(
-                            'The Internet?',
-                            'That thing is still around?',
-                            'success'
-                        )
-                        // Fechar o modal
-                        $('#userModal').modal('hide');
-                    },
-                    error: function (xhr, status, error) {
-                        // Lidar com erros, se houver
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Alterações Efetuadas',
+                            text: 'Perfil atualizado com sucesso',
+                            customClass: 'custom-swal'
+                        }).then(function () {
+                            $('#userModal').modal('hide');
+                        });
                     }
                 });
             });
@@ -269,20 +300,14 @@
                     type: 'GET',
                     data: { userId: userId },
                     success: function (response) {
-                        // Popular o modal com os dados do usuário
                         $('#username').val(response.username);
                         $('#email').val(response.email);
 
-                        // Montar o caminho completo da imagem
                         var imagePath = '/Content/UserImages/' + response.imageName;
                         $('#profilePicture').attr('src', imagePath);
-                    },
-                    error: function (xhr, status, error) {
-                        // Lidar com erros, se houver
                     }
                 });
             });
         });
-
     </script>
 }

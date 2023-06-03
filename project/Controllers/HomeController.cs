@@ -12,32 +12,8 @@ namespace Project.Controllers
     {
         public ActionResult Index()
         {
-            string userEmail = User.Identity.Name;
-
-            using (var entity = new ProjectContext())
-            {
-                var user = entity.users.FirstOrDefault(x => x.email == userEmail);
-
-                if (user != null)
-                {
-                    int userId = user.IdUser;
-                    int administrator = user.administrator;
-
-                    // Use o ID do usuário e o status do administrador como necessário
-
-                    // Exemplo de atribuição para a propriedade do ViewModel
-                    var viewModel = new LoginViewModel
-                    {
-                        IdUser = userId,
-                        Email = userEmail,
-                        administrator = administrator
-                    };
-
-                    return View(viewModel);
-                }
-            }
-
             return View();
+
         }
         [HttpGet]
         public ActionResult UserProfile(int userId)
@@ -54,7 +30,6 @@ namespace Project.Controllers
                 return Json(userProfile, JsonRequestBehavior.AllowGet);
             }
         }
-
         [HttpPost]
         public ActionResult Edit(UserProfile userProfile)
         {

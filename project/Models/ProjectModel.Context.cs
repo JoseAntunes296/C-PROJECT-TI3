@@ -25,9 +25,9 @@ namespace Project.Models
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<projectAssignment> projectAssignments { get; set; }
         public virtual DbSet<project> projects { get; set; }
         public virtual DbSet<task> tasks { get; set; }
         public virtual DbSet<user> users { get; set; }
-        public virtual DbSet<projectAssignment> projectAssignments { get; set; }
     }
 }

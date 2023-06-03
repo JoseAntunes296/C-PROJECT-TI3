@@ -29,7 +29,7 @@
     <Property Name="deadline" Type="datetime" Nullable="false" />
     <Property Name="status" Type="nchar" MaxLength="10" Nullable="false" />
     <Property Name="projectId" Type="int" Nullable="false" />
-    <Property Name="UserTaskId" Type="int" Nullable="false" />
+    <Property Name="UserTaskId" Type="int" />
   </EntityType>
   <EntityType Name="users">
     <Key>
@@ -41,9 +41,10 @@
     <Property Name="password" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="profileImg" Type="varchar" MaxLength="50" />
     <Property Name="administrator" Type="int" Nullable="false" />
+    <Property Name="userStatus" Type="int" Nullable="false" />
     <Property Name="token" Type="varchar" MaxLength="100" Nullable="false" />
   </EntityType>
-  <Association Name="FK__projectAs__proje__3B75D760">
+  <Association Name="FK__projectAs__proje__403A8C7D">
     <End Role="projects" Type="Self.projects" Multiplicity="1" />
     <End Role="projectAssignments" Type="Self.projectAssignments" Multiplicity="*" />
     <ReferentialConstraint>
@@ -55,7 +56,7 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK__projectAs__userI__3A81B327">
+  <Association Name="FK__projectAs__userI__6477ECF3">
     <End Role="users" Type="Self.users" Multiplicity="1" />
     <End Role="projectAssignments" Type="Self.projectAssignments" Multiplicity="*" />
     <ReferentialConstraint>
@@ -67,7 +68,7 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK__tasks__projectId__48CFD27E">
+  <Association Name="FK__tasks__projectId__3E52440B">
     <End Role="projects" Type="Self.projects" Multiplicity="1" />
     <End Role="tasks" Type="Self.tasks" Multiplicity="*" />
     <ReferentialConstraint>
@@ -79,8 +80,8 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK__tasks__UserTaskI__47DBAE45">
-    <End Role="users" Type="Self.users" Multiplicity="1" />
+  <Association Name="FK__tasks__UserTaskI__6E01572D">
+    <End Role="users" Type="Self.users" Multiplicity="0..1" />
     <End Role="tasks" Type="Self.tasks" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="users">
@@ -96,19 +97,19 @@
     <EntitySet Name="projects" EntityType="Self.projects" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tasks" EntityType="Self.tasks" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
-    <AssociationSet Name="FK__projectAs__proje__3B75D760" Association="Self.FK__projectAs__proje__3B75D760">
+    <AssociationSet Name="FK__projectAs__proje__403A8C7D" Association="Self.FK__projectAs__proje__403A8C7D">
       <End Role="projects" EntitySet="projects" />
       <End Role="projectAssignments" EntitySet="projectAssignments" />
     </AssociationSet>
-    <AssociationSet Name="FK__projectAs__userI__3A81B327" Association="Self.FK__projectAs__userI__3A81B327">
+    <AssociationSet Name="FK__projectAs__userI__6477ECF3" Association="Self.FK__projectAs__userI__6477ECF3">
       <End Role="users" EntitySet="users" />
       <End Role="projectAssignments" EntitySet="projectAssignments" />
     </AssociationSet>
-    <AssociationSet Name="FK__tasks__projectId__48CFD27E" Association="Self.FK__tasks__projectId__48CFD27E">
+    <AssociationSet Name="FK__tasks__projectId__3E52440B" Association="Self.FK__tasks__projectId__3E52440B">
       <End Role="projects" EntitySet="projects" />
       <End Role="tasks" EntitySet="tasks" />
     </AssociationSet>
-    <AssociationSet Name="FK__tasks__UserTaskI__47DBAE45" Association="Self.FK__tasks__UserTaskI__47DBAE45">
+    <AssociationSet Name="FK__tasks__UserTaskI__6E01572D" Association="Self.FK__tasks__UserTaskI__6E01572D">
       <End Role="users" EntitySet="users" />
       <End Role="tasks" EntitySet="tasks" />
     </AssociationSet>
