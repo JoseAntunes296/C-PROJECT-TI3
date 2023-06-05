@@ -1,11 +1,30 @@
 ﻿@model IEnumerable<Project.Models.project>
 
 @{
-    ViewBag.Title = "ManageProjects";
+    ViewBag.Title = "Edição de Projetos e Tarefas";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section styles {
     <style>
+        .custom-swal {
+            background-color: #222831 !important;
+            color: white !important;
+        }
+
+        .swal2-confirm {
+            color: white !important;
+            background-color: #1f2029 !important;
+            border-radius: 1rem !important;
+        }
+
+            .swal2-confirm:hover {
+                opacity: 0.8 !important;
+                background-color: #222831 !important;
+                color: white !important;
+                transition: 0.3s !important;
+                border-radius: 1rem !important;
+            }
+
         tbody tr {
             opacity: 0.6;
         }
@@ -51,27 +70,28 @@
     }
 }
 <div class="text-center mt-3">
-    <div class="table-responsive">
-        <table class="table" style="background-color: #222831;color:white;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome do Projeto</th>
-                    <th>Data de Início</th>
-                    <th>Data de Término</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model == null)
-                {
-                    <p>
-                        error
-                    </p>
-                }
-                else
-                {
-                    foreach (var project in Model)
+    @if (Model == null)
+    {
+        <p>
+            Não existem projetos criados.
+        </p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table" style="background-color: #222831;color:white;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome do Projeto</th>
+                        <th>Data de Início</th>
+                        <th>Data de Término</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var project in Model)
                     {
                         <tr>
                             <td>@project.IdProject</td>
@@ -89,7 +109,7 @@
                                         onclick="editProject(this)" data-project-id="@project.IdProject">
                                     Editar
                                 </button>
-                                <button class="btn hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#confirmDeleteModal">Apagar</button>
+                                <button class="btn btn-delete hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#confirmDeletingProject" data-project-id="@project.IdProject">Apagar</button>
                             </td>
                         </tr>
                         <tr id="project-@project.IdProject-Tasks" class="collapse">
@@ -120,7 +140,7 @@
                                                             onclick="editTask(this)" data-task-id="@task.IdTask">
                                                         Editar
                                                     </button>
-                                                    <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#confirmDeleteTaskModal">Apagar</button>
+                                                    <button class="btn hoverView btn-task-delete" style="background-color: #222831; color: white;" data-toggle="modal" data-task-id="@task.IdTask" data-target="#confirmDeleteTask">Apagar</button>
                                                 </td>
                                             </tr>
                                         }
@@ -129,10 +149,10 @@
                             </td>
                         </tr>
                     }
-                }
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
+    }
     <div>
         <a href="/AdminPanel/Index" class="btn hoverView" style="background-color: #222831;color:white; ">Go Back</a>
     </div>
@@ -148,15 +168,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Formulário de Edição do Projeto -->
                 <form>
                     <div class="form-group">
                         <label for="editProjectName">Nome do Projeto</label>
-                        <input type="text" class="form-control" id="editProjectName" placeholder="Nome do Projeto">
+                        <input type="text" class="form-control" id="editProjectName" placeholder="Nome do Projeto" min="10" maxlength="50">
                     </div>
                     <div class="form-group">
-                        <label for="editProjectName">Descrição</label>
-                        <textarea class="form-control" id="editProjectDescription" placeholder="Descrição"></textarea>
+                        <label for="editProjectDescription">Descrição</label>
+                        <textarea class="form-control" id="editProjectDescription" placeholder="Descrição" min="20" maxlength="255"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="editProjectStartDate">Data de Início</label>
@@ -169,13 +188,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" id="saveChangesButton">Guardar Alterações</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " id="saveProjectUpdates">Guardar Alterações</button>
             </div>
         </div>
     </div>
 </div>
-
 <!-- Modal de Edição de Tarefa -->
 <div class="modal fade" id="editTaskModal" tabindex="-1" role="dialog" aria-labelledby="editTaskModalLabel" aria-hidden="true" style="background-color: #1f2029;">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -187,15 +205,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Formulário de Edição da Tarefa -->
                 <form>
                     <div class="form-group">
                         <label for="editTaskName">Nome da Tarefa</label>
-                        <input type="text" class="form-control" id="editTaskName" placeholder="Nome da Tarefa">
+                        <input type="text" class="form-control" id="editTaskName" placeholder="Nome da Tarefa" min="10" maxlength="50">
                     </div>
                     <div class="form-group">
                         <label for="editTaskDescription">Detalhes</label>
-                        <textarea class="form-control" id="editTaskDescription" rows="3" placeholder="Detalhes da Tarefa"></textarea>
+                        <textarea class="form-control" id="editTaskDescription" rows="3" placeholder="Detalhes da Tarefa" min="10" maxlength="144"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="editTaskDeadline">Data de Término</label>
@@ -212,20 +229,18 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary">Salvar Alterações</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " id="editTaskSuccess">Guardar Alterações</button>
             </div>
         </div>
     </div>
 </div>
-
-
 <!-- Modal de Confirmação de Exclusão -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+<div class="modal fade" id="confirmDeletingProject" tabindex="-1" role="dialog" aria-labelledby="confirmDeletingProjectLabel" aria-hidden="true" style="background-color: #1f2029;">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1f2029; color:white;">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5>
+                <h5 class="modal-title" id="confirmDeletingProjectLabel">Confirmar Exclusão</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
@@ -234,8 +249,8 @@
                 <p>Deseja realmente excluir este projeto?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger">Excluir</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " id="confirmDeleteButton">Apagar</button>
             </div>
         </div>
     </div>
@@ -254,42 +269,67 @@
                 <p>Deseja realmente excluir esta tarefa?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger">Excluir</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " id="deleteTasktModal">Apagar</button>
             </div>
         </div>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @section scripts {
     <script>
         function editProject(button) {
             var projectId = $(button).data('project-id');
 
-            $('#editProjectModal .btn-primary').click(function () {
-                var url = '/AdminPanel/UpdateProject/';
-                console.log(projectId);
+            $('#saveProjectUpdates').click(function () {
+                var name = $('#editProjectName').val().trim();
+                var description = $('#editProjectDescription').val().trim();
+                var startDate = $('#editProjectStartDate').val().trim();
+                var endDate = $('#editProjectEndDate').val().trim();
+
+                if (!name || !description || !startDate || !endDate) {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Todos os campos devem ser preenchidos.',
+                        customClass: 'custom-swal',
+                        icon: 'error'
+                    });
+                    return;
+                }
+
                 $.ajax({
-                    url: url,
+                    url: '/AdminPanel/UpdateProject/',
                     type: 'POST',
                     data: {
                         projectId: projectId,
-                        name: $('#editProjectName').val(),
-                        description: $('#editProjectDescription').val(),
-                        startDate: $('#editProjectStartDate').val(),
-                        endDate: $('#editProjectEndDate').val()
+                        name: name,
+                        description: description,
+                        startDate: startDate,
+                        endDate: endDate
                     },
                     success: function (response) {
-                        location.reload();
+                        Swal.fire({
+                            title: 'Sucesso!',
+                            text: 'Projeto atualizado com sucesso!',
+                            customClass: 'custom-swal',
+                            icon: 'success'
+                        }).then(function () {
+                            location.reload();
+                        });
                     },
                     error: function (xhr, status, error) {
-                        console.log(xhr.responseText);
+                        Swal.fire({
+                            title: 'Erro!',
+                            text: 'Erro ao atualizar o projeto.',
+                            customClass: 'custom-swal',
+                            icon: 'error'
+                        });
                     }
                 });
             });
-
             $.ajax({
                 url: '/AdminPanel/GetProject',
                 type: 'POST',
@@ -308,17 +348,20 @@
                     $('#editProjectEndDate').attr('value', formattedEndDate);
                 },
                 error: function (xhr, status, error) {
-                    console.log(error);
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Erro ao carregar o projeto.',
+                        customClass: 'custom-swal',
+                        icon: 'error'
+                    });
                 }
             });
         }
-
         function editTask(button) {
             var taskId = $(button).data('task-id');
 
-            $('#editTaskModal .btn-primary').click(function () {
+            $('#editTaskSuccess').click(function () {
                 var url = '/AdminPanel/UpdateTask/';
-                console.log(taskId);
                 $.ajax({
                     url: url,
                     type: 'POST',
@@ -330,10 +373,22 @@
                         status: $('#editTaskStatus').val()
                     },
                     success: function (response) {
-                        location.reload();
+                        Swal.fire({
+                            title: 'Sucesso!',
+                            text: 'Tarefa atualizada com sucesso!',
+                            customClass: 'custom-swal',
+                            icon: 'success'
+                        }).then(function () {
+                            location.reload();
+                        });
                     },
                     error: function (xhr, status, error) {
-                        console.log(xhr.responseText);
+                        Swal.fire({
+                            title: 'Erro!',
+                            text: 'Ocorreu um erro ao atualizar a tarefa.',
+                            customClass: 'custom-swal',
+                            icon: 'error'
+                        });
                     }
                 });
             });
@@ -344,12 +399,8 @@
                 dataType: 'json',
                 data: { taskId: taskId },
                 success: function (response) {
-                    console.log(response);
-
                     const deadline = new Date(parseInt(response.deadline.replace("/Date(", "").replace(")/", "")));
-
                     const formattedDeadline = formatDate(deadline);
-                    console.log("FINISH" + response);
 
                     $('#editTaskName').val(response.name);
                     $('#editTaskDescription').val(response.description);
@@ -358,11 +409,108 @@
                     $('#editTaskStatus').val(status);
                 },
                 error: function (xhr, status, error) {
-                    console.log(error);
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Ocorreu um erro ao obter os detalhes da tarefa.',
+                        customClass: 'custom-swal',
+                        icon: 'error'
+                    });
                 }
             });
         }
+        $(document).ready(function () {
+            $('.btn-delete').click(function () {
+                var projectId = $(this).data('project-id');
+                $('#confirmDeletingProject').modal('show');
+                $('#confirmDeleteButton').data('project-id', projectId);
+            });
 
+            $('#confirmDeleteButton').click(function () {
+                var projectId = $(this).data('project-id');
+
+                Swal.fire({
+                    title: 'Tens a certeza?',
+                    text: 'Esta ação não pode ser desfeita.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, remover!',
+                    cancelButtonText: 'Cancelar'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        deleteProject(projectId);
+                    }
+                });
+
+                $('#confirmDeleteProject').modal('hide');
+            });
+        });
+        function deleteProject(projectId) {
+            $.post('/AdminPanel/DeleteProject', { projectId: projectId })
+                .done(function (response) {
+                    Swal.fire({
+                        title: response.success ? 'Sucesso!' : 'Erro!',
+                        text: response.success ? 'Projeto removido com sucesso!' : 'Erro ao remover o projeto.',
+                        icon: response.success ? 'success' : 'error'
+                    });
+                })
+                .fail(function () {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Erro ao remover o projeto.',
+                        customClass: 'custom-swal',
+                        confirmButtonText: 'Sim, remover!',
+                        icon: 'error'
+                    });
+                });
+        }
+        $(document).ready(function () {
+            $('.btn-task-delete').click(function () {
+                var taskId = $(this).data('task-id');
+                $('#confirmDeleteTaskModal').modal('show');
+                $('#deleteTasktModal').data('task-id', taskId);
+            });
+
+            $('#deleteTasktModal').click(function () {
+                var taskId = $(this).data('task-id');
+
+                Swal.fire({
+                    title: 'Tens a certeza?',
+                    text: 'Esta ação não pode ser desfeita.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    customClass: 'custom-swal',
+                    confirmButtonText: 'Sim, remover!',
+                    cancelButtonText: 'Cancelar'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        deleteProject(taskId);
+                    }
+                });
+                $('#confirmDeleteTaskModal').modal('hide');
+            });
+        });
+        function deleteProject(taskId) {
+            $.post('/AdminPanel/DeleteTask', { taskId: taskId })
+                .done(function (response) {
+                    Swal.fire({
+                        title: response.success ? 'Sucesso!' : 'Erro!',
+                        text: response.success ? 'Tarefa removido com sucesso!' : 'Erro ao remover a tarefa.',
+                        customClass: 'custom-swal',
+                        icon: response.success ? 'success' : 'error'
+                    }).then(function (result) {
+                        location.reload()
+                    });
+                })
+                .fail(function () {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Erro ao remover a tarefa.',
+                        confirmButtonText: 'Ok',
+                        customClass: 'custom-swal',
+                        icon: 'error'
+                    });
+                });
+        }
         function formatDate(date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -370,8 +518,6 @@
 
             return `${year}-${month}-${day}`;
         }
-
-
         function toggleAccordionIcon(button, projectId) {
             const icon = button.querySelector('ion-icon');
             const iconId = icon.getAttribute('id');

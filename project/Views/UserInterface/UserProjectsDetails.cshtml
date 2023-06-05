@@ -1,12 +1,31 @@
 ﻿@model IEnumerable<Project.Models.project>
 
 @{
-    ViewBag.Title = "UserProgAssign";
+    ViewBag.Title = "Meus Projetos";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section styles {
     <style>
+        .custom-swal {
+            background-color: #222831 !important;
+            color: white !important;
+        }
+
+        .swal2-confirm {
+            color: white !important;
+            background-color: #1f2029 !important;
+            border-radius: 1rem !important;
+        }
+
+            .swal2-confirm:hover {
+                opacity: 0.8 !important;
+                background-color: #222831 !important;
+                color: white !important;
+                transition: 0.3s !important;
+                border-radius: 1rem !important;
+            }
+
         tbody tr {
             opacity: 0.6;
         }
@@ -70,8 +89,8 @@ else
                             <td>@projectDetails.IdProject</td>
                             <td>
                                 @projectDetails.name
-                                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-toggle="modal" data-target="#editProjectModal"
-                                        onclick="editProject(this)" data-project-id="@projectDetails.IdProject">
+                                <button class="btn btn-link btn-sm ml-2" data-toggle="collapse" data-target="#project-@projectDetails.IdProject-Tasks"
+                                        onclick="toggleAccordionIcon(this, @projectDetails.IdProject)">
                                     <ion-icon id="project-@projectDetails.IdProject-Icon" name="chevron-down-outline"></ion-icon>
                                 </button>
                             </td>
@@ -80,7 +99,7 @@ else
                             <td>@projectDetails.endDate.ToShortDateString()</td>
                             <td><span class="badge badge-@classeCss">@resultado</span></td>
                             <td>
-                                <button class="btn hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#detailsModal">
+                                <button class="btn hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#abandonProjectModal" data-project-id="@projectDetails.IdProject">
                                     Detalhes
                                 </button>
                             </td>
@@ -98,7 +117,6 @@ else
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Loop through tasks -->
                                         @foreach (var task in projectDetails.tasks)
                                         {
                                             int status;
@@ -110,11 +128,9 @@ else
                                                 <td>@task.deadline.ToShortDateString()</td>
                                                 <td>@teste</td>
                                                 <td>
-                                                    <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#editTaskModal"
-                                                            onclick="editTask(this)" data-task-id="@task.IdTask">
-                                                        Editar
+                                                    <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#showTaskModal" data-task-id="@task.IdTask">
+                                                        Detalhes
                                                     </button>
-                                                    <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#confirmDeleteTaskModal">Apagar</button>
                                                 </td>
                                             </tr>
                                         }
@@ -131,8 +147,242 @@ else
         </div>
     </div>
 }
+<div class="modal fade" id="abandonProjectModal" tabindex="-1" role="dialog" aria-labelledby="abandonProjectModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="abandonProjectModalLabel">Detalhes do Projeto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="color:white">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="abandonProjectName">Nome do Projeto</label>
+                        <input type="text" class="form-control" id="abandonProjectName" placeholder="Nome do Projeto" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="abandonProjectDescription">Descrição</label>
+                        <textarea class="form-control" id="abandonProjectDescription" placeholder="Descrição" disabled></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="abandonProjectStartDate">Data de Início</label>
+                        <input type="date" class="form-control" id="abandonProjectStartDate" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="abandonProjectEndDate">Data de Término</label>
+                        <input type="date" class="form-control" id="abandonProjectEndDate" disabled>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn btn-danger" id="abandonProjectButton">Abandonar Projeto</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="showTaskModal" tabindex="-1" role="dialog" aria-labelledby="showTaskModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color: white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="showTaskModalLabel">Detalhes da Tarefa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="taskName">Nome da Tarefa</label>
+                        <input type="text" class="form-control" id="taskName" placeholder="Nome da Tarefa" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Descrição</label>
+                        <textarea class="form-control" id="taskDescription" placeholder="Descrição" disabled></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDeadline">Data de Término</label>
+                        <input type="date" class="form-control" id="taskDeadline" disabled>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="abandonOrTakeTaskButton" class="btn btn-danger" data-dismiss="modal">Abandonar Tarefa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @section scripts{
     <script>
+    $(document).ready(function () {
+        $('#abandonProjectModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var projectId = button.data('project-id');
+            var userId = "@Session["IdUser"]";
+
+            $.ajax({
+                url: '/AdminPanel/GetProject',
+                type: 'POST',
+                data: { projectId: projectId },
+                success: function (response) {
+                    const startDate = new Date(parseInt(response.startDate.replace("/Date(", "").replace(")/", "")));
+                    const endDate = new Date(parseInt(response.endDate.replace("/Date(", "").replace(")/", "")));
+
+                    const formattedStartDate = formatDate(startDate);
+                    const formattedEndDate = formatDate(endDate);
+
+                    $('#abandonProjectName').val(response.name);
+                    $('#abandonProjectDescription').val(response.description);
+                    $('#abandonProjectStartDate').val(formattedStartDate);
+                    $('#abandonProjectEndDate').val(formattedEndDate);
+
+                    $('#abandonProjectButton').on('click', function () {
+                        $.ajax({
+                            url: '/AdminPanel/abandonProjeto',
+                            type: 'POST',
+                            data: {
+                                projectId: projectId,
+                                userId: userId
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Projeto abandonado com sucesso',
+                                    customClass: 'custom-swal',
+                                    text: response.message
+                                }).then(function () {
+                                    location.reload();
+                                });
+                            },
+                            error: function (error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erro ao abandonar o projeto',
+                                    customClass: 'custom-swal',
+                                    text: 'Ocorreu um erro ao abandonar o projeto. Por favor, tente novamente.'
+                                });
+                            }
+                        });
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+$(document).ready(function() {
+  $('#showTaskModal').on('show.bs.modal', function(event) {
+    var button = $(event.relatedTarget);
+    var taskId = button.data('task-id');
+    var userId = "@Session["IdUser"]";
+
+    $.ajax({
+      url: '/AdminPanel/GetUserTask',
+      type: 'POST',
+      data: {
+        taskId: taskId
+      },
+      success: function(response) {
+        $('#taskName').val(response.name);
+        $('#taskDescription').val(response.description);
+        $('#taskDeadline').val(response.deadline);
+
+        var userHasTask = response.userHasTask;
+        var abandonOrTakeTaskButton = $('#abandonOrTakeTaskButton');
+
+        if (userHasTask) {
+          abandonOrTakeTaskButton.text('Abandonar Tarefa');
+          abandonOrTakeTaskButton.removeClass('btn-success').addClass('btn-danger');
+        } else {
+          abandonOrTakeTaskButton.text('Pegar Tarefa');
+          abandonOrTakeTaskButton.removeClass('btn-danger').addClass('btn-success');
+        }
+
+        abandonOrTakeTaskButton.off('click').on('click', function() {
+          if (userHasTask) {
+            abandonTask(taskId, userId);
+          } else {
+            takeTask(taskId, userId);
+          }
+        });
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  });
+});
+
+function abandonTask(taskId, userId) {
+  $.ajax({
+    url: '/AdminPanel/abandonTask',
+    type: 'POST',
+    data: {
+      taskId: taskId,
+      userId: userId
+    },
+    success: function(response) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Tarefa abandonada com sucesso!',
+          customClass: 'custom-swal'
+      }).then(function() {
+          location.reload();
+      });
+    },
+    error: function(error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao abandonar a tarefa',
+          customClass: 'custom-swal',
+        text: error.responseText
+      }).then(function() {
+          location.reload();
+      });
+    }
+  });
+}
+
+function takeTask(taskId, userId) {
+  $.ajax({
+    url: '/AdminPanel/takeTask',
+    type: 'POST',
+    data: {
+      taskId: taskId,
+      userId: userId
+    },
+    success: function(response) {
+      Swal.fire({
+        icon: 'success',
+          title: 'Tarefa atribuída com sucesso!',
+          customClass: 'custom-swal'
+
+      }).then(function() {
+          location.reload();
+      });
+    },
+    error: function(error) {
+      // Exibir SweetAlert de erro
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao atribuir a tarefa',
+          text: error.responseText,
+          customClass: 'custom-swal'
+
+      }).then(function () {
+          location.reload();
+      });
+    }
+  });
+}
+
         function toggleAccordionIcon(button, projectId) {
             const icon = button.querySelector('ion-icon');
             const iconId = icon.getAttribute('id');
@@ -158,6 +408,13 @@ else
                     }
                 }
             });
+        }
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
         }
     </script>
 }

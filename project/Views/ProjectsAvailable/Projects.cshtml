@@ -1,4 +1,4 @@
-﻿@model Project.Models.ViewModal
+﻿@model IEnumerable<Project.Models.project>
 @{
     ViewBag.Title = "Projects";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -82,7 +82,7 @@
                 </thead>
                 <tbody>
 
-                    @foreach (var project in Model.Projects)
+                    @foreach (var project in Model)
                     {
                         <tr>
                             <td>@project.IdProject</td>
@@ -150,7 +150,7 @@
 
 @section scripts {
 
-<script>
+    <script>
     $(document).ready(function () {
         $(".pick-project-button").click(function () {
             var projectId = $(this).data('project-id');
@@ -201,5 +201,5 @@
             });
         });
     });
-</script>
+    </script>
 }

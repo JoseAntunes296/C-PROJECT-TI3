@@ -1,23 +1,30 @@
 ﻿@model IEnumerable<Project.Models.user>
 @{
-    ViewBag.Title = "ManageUsers";
+    ViewBag.Title = "Gestão de Utilizadores";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
 @section styles {
     <style>
-        tbody tr {
-            opacity: 0.6;
+        .custom-swal {
+            background-color: #222831 !important;
+            color: white !important;
         }
 
-        .table-container {
-            display: inline-block;
+        .swal2-confirm {
+            color: white !important;
+            background-color: #1f2029 !important;
+            border-radius: 1rem !important;
         }
 
-        tbody tr:hover {
-            opacity: 1;
-        }
+            .swal2-confirm:hover {
+                opacity: 0.8 !important;
+                background-color: #222831 !important;
+                color: white !important;
+                transition: 0.3s !important;
+                border-radius: 1rem !important;
+            }
 
         .hoverView {
             opacity: 0.8;
@@ -32,6 +39,18 @@
                 color: white;
                 border-color: #225841;
             }
+
+        tbody tr {
+            opacity: 0.6;
+        }
+
+        .table-container {
+            display: inline-block;
+        }
+
+        tbody tr:hover {
+            opacity: 1;
+        }
 
         .table-responsive {
             overflow-x: auto;
@@ -52,27 +71,28 @@
     }
 }
 <div class="text-center mt-3">
-    <div class="table-responsive">
-        <table class="table" style="background-color: #222831;color:white;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Tipo de Utilizador</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model == null)
-                {
-                    <p>
-                        error
-                    </p>
-                }
-                else
-                {
-                    foreach (var user in Model)
+    @if (Model == null)
+    {
+        <p>
+            Ainda não existem utilizadores criados!
+        </p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table" style="background-color: #222831;color:white;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Tipo de Utilizador</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var user in Model)
                     {
                         var admin = user.administrator == 1 ? "Administrador" : "Comum";
                         <tr>
@@ -90,11 +110,11 @@
                                 <button class="btn hoverView btn-delete" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#confirmDeleteModal" data-user-id="@user.IdUser">Apagar</button>
                             </td>
                         </tr>
+
                     }
-                }
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>}
     <div>
         <a href="/AdminPanel/Index" class="btn hoverView" style="background-color: #222831;color:white; ">Go Back</a>
     </div>
@@ -119,7 +139,7 @@
         </div>
     </div>
 </div>
-<!-- Modal de Edição de Projeto -->
+<!-- Modal de Edição do User -->
 <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true" style="background-color: #1f2029;">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1f2029; color:white;">
@@ -132,7 +152,7 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="editusername">username:</label>
+                        <label for="editusername">Username:</label>
                         <input type="text" class="form-control" id="editusername" placeholder="username" disabled>
                     </div>
                     <div class="form-group">
@@ -141,7 +161,7 @@
                     </div>
                     <div class="form-group">
                         <label for="select1">Tipo de Utilizador:</label>
-                        <select class="form-control" id="select1">
+                        <select class="form-control" id="editUseradministrador">
                             <option value="1">Administrador</option>
                             <option value="0">Padrão</option>
                         </select>
@@ -156,36 +176,59 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" id="saveChangesButton">Guardar Alterações</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " id="saveChangesButton">Guardar Alterações</button>
             </div>
         </div>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @section scripts {
     <script>
         function editUser(button) {
             var userId = $(button).data('user-id');
 
-            $('#editUserModal .btn-primary').click(function () {
-                var url = '/AdminPanel/UpdateUser/';
-                console.log(userId);
+            $('#saveChangesButton').click(function () {
+                var email = $('#editUserEmail').val().trim();
+                var administrador = $('#editUseradministrador').val() || null;
+                var status = $('#status').val();
+
+                if (!email) {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'O campo de email não pode ser vazio.',
+                        customClass: 'custom-swal',
+                        icon: 'error'
+                    });
+                    return;
+                }
+
                 $.ajax({
-                    url: url,
+                    url: '/AdminPanel/UpdateUser/',
                     type: 'POST',
                     data: {
                         userId: userId,
-                        email: $('#editUserEmail').val(),
-                        administrador: $('#editUseradministrador').val(),
-                        status: $('#editUserstatus').val()
+                        email: email,
+                        administrador: administrador,
+                        status: status
                     },
                     success: function (response) {
-                        location.reload();
+                        Swal.fire({
+                            title: 'Sucesso!',
+                            text: 'Utilizador atualizado com sucesso!',
+                            customClass: 'custom-swal',
+                            icon: 'success'
+                        })
                     },
                     error: function (xhr, status, error) {
-                        console.log(xhr.responseText);
+                        Swal.fire({
+                            title: 'Erro!',
+                            text: 'Erro ao atualizar o utilizador.',
+                            customClass: 'custom-swal',
+                            icon: 'error'
+                        });
                     }
                 });
             });
@@ -196,18 +239,21 @@
                 dataType: 'json',
                 data: { userId: userId },
                 success: function (response) {
-                    console.log(response.username);
                     $('#editusername').val(response.username);
                     $('#editUserEmail').val(response.email);
-                    $('#editUseradministrador').attr(response.administrador);
-                    $('#editUserstatus').attr(response.status);
+                    $('#editUseradministrador').val(response.administrador);
+                    $('#status').val(response.status);
                 },
                 error: function (xhr, status, error) {
-                    console.log(error);
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Erro ao procurar o utilizador.',
+                        customClass: 'custom-swal',
+                        icon: 'error'
+                    });
                 }
             });
         }
-
         $(document).ready(function () {
             $('.btn-delete').click(function () {
                 var userId = $(this).data('user-id');
@@ -215,25 +261,45 @@
                 $('#confirmDeleteModal').modal('show');
                 $('#confirmDeleteModal .btn-danger').data('user-id', userIdToDelete);
             });
+
             $('#confirmDeleteModal .btn-danger').click(function () {
                 var userId = $(this).data('user-id');
 
-                $.ajax({
-                    url: '/Accounts/DeleteUser',
-                    type: 'POST',
-                    data: {
-                        userId: userId
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            console.log('Usuário excluído com sucesso!');
-                        } else {
-                            console.log('Erro ao excluir o usuário.');
-                        }
+                Swal.fire({
+                    title: 'Tem a certeza?',
+                    text: 'Essa ação não pode ser desfeita.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    customClass: 'custom-swal',
+                    confirmButtonText: 'Sim, apagar!',
+                    cancelButtonText: 'Cancelar'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        deleteUser(userId);
                     }
                 });
+
                 $('#confirmDeleteModal').modal('hide');
             });
         });
+        function deleteUser(userId) {
+            $.post('/Accounts/DeleteUser', { userId: userId })
+                .done(function (response) {
+                    Swal.fire({
+                        title: response.success ? 'Sucesso!' : 'Erro!',
+                        text: response.success ? 'Utilizador removido com sucesso!' : 'Erro ao remover o utilizador.',
+                        customClass: 'custom-swal',
+                        icon: response.success ? 'success' : 'error'
+                    });
+                })
+                .fail(function () {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Erro ao remover o utilizador.',
+                        customClass: 'custom-swal',
+                        icon: 'error'
+                    });
+                });
+        }
     </script>
 }

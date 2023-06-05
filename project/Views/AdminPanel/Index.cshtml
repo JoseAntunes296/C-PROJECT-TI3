@@ -1,10 +1,28 @@
-﻿
-@{
-    ViewBag.Title = "Index";
+﻿@{
+    ViewBag.Title = "Administração";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
+    .custom-swal {
+        background-color: #222831;
+        color: white;
+    }
+
+    .swal2-confirm {
+        color: white !important;
+        background-color: #1f2029 !important;
+        border-radius: 1rem !important;
+    }
+
+        .swal2-confirm:hover {
+            opacity: 0.8;
+            background-color: #222831;
+            color: white;
+            transition: 0.3s;
+            border-radius: 1rem;
+        }
+
     .hoverView {
         opacity: 0.8;
         background-color: #222831;
@@ -26,6 +44,60 @@
     .col-md-3.col-sm-6 {
         margin-bottom: 2rem !important;
     }
+
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .scrollable-menu {
+        height: auto;
+        max-height: 200px;
+        overflow-x: hidden;
+    }
+
+    .result-item {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+        .result-item:hover {
+            background-color: #f1f1f1;
+        }
+
+    .list-group-item.disabled, .list-group-item:disabled {
+        background-color: #222831;
+        color: white;
+    }
+
+    .list-group-item {
+        opacity: 0.8;
+        background-color: #222831;
+        color: white;
+        transition: 0.3s;
+        position: relative;
+    }
+
+        .list-group-item:hover {
+            opacity: 1.2;
+            color: white;
+            border-color: #225841;
+        }
+
+            .list-group-item:hover::before {
+                content: '';
+                position: absolute;
+                top: -1px;
+                left: 0;
+                width: 100%;
+                height: 1px;
+                background-color: #225841;
+            }
 </style>
 <div class="row text-center">
     @{
@@ -77,7 +149,7 @@
         <a href="/AdminPanel/ManageProjects" class="btn hoverView" style="width: 13rem; height: 8rem;">
             <div class="card-body">
                 <ion-icon size="large" name="settings-outline"></ion-icon>
-                <h5 class="card-title">Editar Projetos</h5>
+                <h5 class="card-title">Editar Projetos e Tarefas</h5>
             </div>
         </a>
     </div>
@@ -117,7 +189,7 @@
                 <button type="button" class="btn btn-lg btn-block" style="background-color: #222831;color:white">Total de Utilizadores - Excel</button>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
             </div>
         </div>
     </div>
@@ -153,8 +225,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" id="saveChangesButton">Guardar Alterações</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " id="saveChangesButton">Guardar Alterações</button>
             </div>
         </div>
     </div>
@@ -170,30 +242,51 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="projectSelect">Projeto:</label>
-                        <select class="form-control" id="projectSelect">
-                            <option value="">Selecione um projeto</option>
-                        </select>
+                <div class="form-group">
+                    <label for="projectNameTask">Projeto:</label>
+                    <div class="input-group">
+                        <input class="form-control" id="projectNameTask" placeholder="Projeto..." readonly>
+                        <div class="input-group-append">
+                            <button class="btn hoverView" type="button" style="background-color: #1f2029; color: white; " data-toggle="modal" data-target="#projectModal">
+                                Selecionar
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="taskName">Nome da tarefa:</label>
-                        <input class="form-control" id="taskName" placeholder="Nome..." maxlength="50" />
-                    </div>
-                    <div class="form-group">
-                        <label for="taskDetails">Detalhes da Tarefa:</label>
-                        <textarea class="form-control" id="taskDetails" rows="3" placeholder="Detalhes..." maxlength="144"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="taskEndDate">Data de Término:</label>
-                        <input type="date" class="form-control" id="taskEndDate">
-                    </div>
-                </form>
+                </div>
+                <div class="form-group">
+                    <label for="taskName">Nome da tarefa:</label>
+                    <input class="form-control" id="taskName" placeholder="Nome..." maxlength="50" />
+                </div>
+                <div class="form-group">
+                    <label for="taskDetails">Detalhes da Tarefa:</label>
+                    <textarea class="form-control" id="taskDetails" rows="3" placeholder="Detalhes..." maxlength="144"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="taskEndDate">Data de Término:</label>
+                    <input type="date" class="form-control" id="taskEndDate">
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" onclick="saveTask()">Guardar Alterações</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white;" data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white;" onclick="saveTask()">Guardar Alterações</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Project Modal -->
+<div class="modal fade" id="projectModal" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029;">
+            <div class="modal-header" style="color:white;">
+                <h5 class="modal-title" id="projectModalLabel">Selecionar Projeto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="color:white">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="search" class="form-control" id="projectSearch" placeholder="Pesquisar projeto...">
+                <ul class="list-group mt-2" id="projectList">
+                </ul>
             </div>
         </div>
     </div>
@@ -211,11 +304,11 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="username">Nome de Usuário:</label>
+                        <label for="username">Username:</label>
                         <input type="text" class="form-control" id="username" placeholder="Username" maxlength="10" min="3">
                     </div>
                     <div class="form-group">
-                        <label for="email">E-mail:</label>
+                        <label for="email">Email:</label>
                         <input type="email" class="form-control" id="email" placeholder="Email" maxlength="50" min="3">
                     </div>
                     <div class="form-group">
@@ -235,13 +328,16 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" id="UserSaveChange">Guardar Alterações</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " id="UserSaveChange">Guardar Alterações</button>
             </div>
         </div>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @section scripts{
     <script>
         //downloads
@@ -252,6 +348,7 @@
                     url: "/AdminPanel/GenerateProjectsTasksWord",
                     type: "GET",
                     success: function (response) {
+                        $('#downloadsModal').modal('hide');
                     },
                     error: function (xhr, status, error) {
                         console.log(error);
@@ -266,6 +363,7 @@
                     success: function (response) {
                         var pdfUrl = response.url;
                         window.open(pdfUrl, "_blank");
+                        $('#downloadsModal').modal('hide');
                     },
                     error: function (xhr, status, error) {
                         console.log(error);
@@ -278,6 +376,7 @@
                     url: "/AdminPanel/GenerateUsersWord",
                     type: "GET",
                     success: function (response) {
+                        $('#downloadsModal').modal('hide');
                     },
                     error: function (xhr, status, error) {
                         console.log(error);
@@ -286,16 +385,13 @@
             });
             //GenerateUsersPDF
             $("#downloadsModal").on("click", ".btn-block:eq(3)", function () {
-                // Faça a chamada AJAX para gerar o PDF
                 $.ajax({
                     url: "/AdminPanel/GenerateUsersPDF",
                     type: "GET",
                     success: function (response) {
-                        // Se a chamada for bem-sucedida, abra uma nova janela com o PDF gerado
                         var pdfUrl = response.url;
-
-                        // Abra uma nova janela com o URL do PDF
                         window.open(pdfUrl, "_blank");
+                        $('#downloadsModal').modal('hide');
                     },
                     error: function (xhr, status, error) {
                         console.log(error);
@@ -304,40 +400,31 @@
             });
             //GenerateProjectTasksExcel
             $("#downloadsModal").on("click", ".btn-block:eq(4)", function () {
-                // Faça a chamada AJAX para gerar o PDF
                 $.ajax({
                     url: "/AdminPanel/GenerateProjectTasksExcel",
                     type: "GET",
                     success: function (response) {
-
+                        $('#downloadsModal').modal('hide');
                     },
                     error: function (xhr, status, error) {
                         console.log(error);
                     }
                 });
             });
-
+            //GenerateUsersExcel
             $("#downloadsModal").on("click", ".btn-block:eq(5)", function () {
-                // Faça a chamada AJAX para gerar o PDF
                 $.ajax({
-                    url: "/AdminPanel/GenerateUsersPDF",
+                    url: "/AdminPanel/GenerateUsersExcel",
                     type: "GET",
                     success: function (response) {
-                        // Se a chamada for bem-sucedida, abra uma nova janela com o PDF gerado
-                        var pdfUrl = response.url;
-
-                        // Abra uma nova janela com o URL do PDF
-                        window.open(pdfUrl, "_blank");
+                        $('#downloadsModal').modal('hide');
                     },
                     error: function (xhr, status, error) {
                         console.log(error);
                     }
                 });
             });
-
         });
-
-
         function formatDate(dateString) {
             var date = new Date(dateString);
             var year = date.getFullYear();
@@ -346,43 +433,64 @@
 
             return `${year}-${month}-${day}`;
         }
+        var IdProjectTask = 0;
+        $('#projectModal').on('show.bs.modal', loadAllProjects);
+        function loadAllProjects() {
+            var projectSearch = $('#projectSearch');
+            var projectList = $('#projectList');
+            projectList.empty();
 
-        $(document).ready(function () {
-            $('#addTaskModal').on('show.bs.modal', function () {
-                loadProjects();
-            });
-        });
-
-        function loadProjects() {
             $.ajax({
                 url: '/AdminPanel/GetProjects',
                 type: 'GET',
                 dataType: 'json',
                 success: function (response) {
-                    console.log(response);
-                    var projectSelect = $('#projectSelect');
-                    projectSelect.empty();
+                    response.forEach(function (project) {
+                        var projectOption = $('<li class="list-group-item" id="' + project.IdProject + '" style="cursor:pointer;">' + project.name + '</li>');
+                        projectOption.on('click', function () {
+                            IdProjectTask = project.IdProject;
+                            $('#projectNameTask').val(project.name);
+                            $('#projectModal').modal('hide');
+                        });
+                        projectList.append(projectOption);
+                    });
 
-                    projectSelect.append('<option value="">Selecione um projeto</option>');
+                    projectSearch.on('input', function () {
+                        var searchTerm = $(this).val().trim().toLowerCase();
+                        projectList.empty();
 
-                    for (var i = 0; i < response.length; i++) {
-                        var project = response[i];
-                        projectSelect.append('<option value="' + project.IdProject + '">' + project.name + '</option>');
-                    }
+                        var filteredProjects = response.filter(function (project) {
+                            return project.name.toLowerCase().includes(searchTerm);
+                        });
+
+                        if (filteredProjects.length > 0) {
+                            filteredProjects.forEach(function (project) {
+                                var projectOption = $('<li class="list-group-item">' + project.name + '</li>');
+                                projectOption.on('click', function () {
+                                    IdProjectTask = project.IdProject;
+                                    $('#projectNameTask').val(project.name);
+                                    $('#projectModal').modal('hide');
+                                });
+                                projectList.append(projectOption);
+                            });
+                        } else {
+                            var noResultsMessage = $('<li class="list-group-item disabled">Nenhum projeto encontrado</li>');
+                            projectList.append(noResultsMessage);
+                        }
+                    });
                 },
                 error: function (xhr, status, error) {
                     console.log(xhr);
                 }
             });
         }
-
         function saveTask() {
-            var projectId = $('#projectSelect').val();
+            var projectId = IdProjectTask
             var taskDetails = $('#taskDetails').val();
             var taskEndDate = formatDate($('#taskEndDate').val());
             var taskName = $('#taskName').val();
 
-            if (projectId && taskName && taskDetails && taskEndDate) {
+            if (taskName && taskDetails && taskEndDate) {
                 $.ajax({
                     url: '/AdminPanel/SaveTask',
                     type: 'POST',
@@ -394,59 +502,107 @@
                         taskEndDate: taskEndDate
                     },
                     success: function (response) {
-                        alert('Tarefa salva com sucesso!');
-                        $('#taskDetails').val('');
-                        $('#taskEndDate').val('');
-
-                        $('#addTaskModal').modal('hide');
+                        Swal.fire({
+                            title: 'Sucesso!',
+                            text: 'Tarefa adicionada com sucesso!',
+                            icon: 'success',
+                            customClass: 'custom-swal',
+                            confirmButtonText: 'OK'
+                        }).then(function () {
+                            $('#taskDetails').val('');
+                            $('#taskEndDate').val('');
+                            $('#addTaskModal').modal('hide');
+                        });
                     },
                     error: function (xhr, status, error) {
                         console.error(xhr.responseText);
+                        Swal.fire({
+                            title: 'Erro!',
+                            text: 'Ocorreu um erro ao adicionar a tarefa.',
+                            icon: 'error',
+                            customClass: 'custom-swal',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             } else {
-                alert('Por favor, preencha todos os campos.');
+                Swal.fire({
+                    title: 'Erro!',
+                    text: 'Por favor, preencha todos os campos.',
+                    icon: 'error',
+                    customClass: 'custom-swal',
+                    confirmButtonText: 'OK'
+                });
             }
         }
-
         $(document).ready(function () {
             $('#addUserModal form').submit(function (e) {
                 e.preventDefault();
             });
-
             $('#addUserModal').on('click', '#UserSaveChange', function () {
                 var username = $('#username').val();
                 var email = $('#email').val();
                 var isAdmin = $('#isAdmin').val();
                 var status = $('#status').val();
 
-                var formData = {
-                    username: username,
-                    email: email,
-                    isAdmin: isAdmin,
-                    status: status
-                };
-                console.log(email);
+                if (username && email && isAdmin && status) {
+                    var formData = {
+                        username: username,
+                        email: email,
+                        isAdmin: isAdmin,
+                        status: status
+                    };
 
-                $.ajax({
-                    type: 'POST',
-                    url: '/Accounts/AddUser',
-                    data: formData,
-                    success: function (result) {
-                        if (result.success) {
-                            alert('Usuário adicionado com sucesso!');
-                            $('#addUser').modal('hide');
-                        } else {
-                            alert('Ocorreu um erro ao adicionar o usuário.');
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Accounts/AddUser',
+                        data: formData,
+                        success: function (result) {
+                            if (result.success) {
+                                Swal.fire({
+                                    title: 'Sucesso!',
+                                    text: 'Utilizador adicionado com sucesso!',
+                                    icon: 'success',
+                                    customClass: 'custom-swal',
+                                    confirmButtonText: 'OK'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $('#addUser').modal('hide');
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Erro!',
+                                    text: 'Ocorreu um erro ao adicionar o utilizador.',
+                                    icon: 'error',
+                                    customClass: 'custom-swal',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                title: 'Erro!',
+                                text: 'Ocorreu um erro no sistema, tente novamente mais logo.',
+                                icon: 'error',
+                                customClass: 'custom-swal',
+                                confirmButtonText: 'OK'
+                            }).then(function () {
+                                location.reload();
+                            });
                         }
-                    },
-                    error: function () {
-                        alert('Ocorreu um erro na chamada Ajax.');
-                    }
-                });
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Por favor, preencha todos os campos.',
+                        icon: 'error',
+                        customClass: 'custom-swal',
+                        confirmButtonText: 'OK'
+                    });
+                }
             });
         });
-
         $(document).ready(function () {
             $('#addProjectModal form').submit(function (e) {
                 e.preventDefault();
@@ -458,15 +614,17 @@
                 var projectDetails = $('#details').val();
                 var projectEndDate = $('#endDate').val();
 
-                if (projectStartDate === '') {
-                    alert('Por favor, preencha o campo Data de Início.');
+                if (!projectName || !projectStartDate || !projectEndDate) {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Por favor, preencha todos os campos.',
+                        icon: 'error',
+                        customClass: 'custom-swal',
+                        confirmButtonText: 'OK'
+                    });
                     return;
                 }
 
-                if (projectEndDate === '') {
-                    alert('Por favor, preencha o campo Data de Término.');
-                    return;
-                }
                 var formData = {
                     name: projectName,
                     description: projectDetails,
@@ -479,14 +637,29 @@
                     url: '/AdminPanel/CreateProject',
                     data: formData,
                     success: function (response) {
-                        console.log(response);
+                        Swal.fire({
+                            title: 'Sucesso!',
+                            text: 'Projeto criado com sucesso!',
+                            icon: 'success',
+                            customClass: 'custom-swal',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#addProjectModal').modal('hide');
+                            }
+                        });
                     },
                     error: function (error) {
-                        console.log(error);
+                        Swal.fire({
+                            title: 'Erro!',
+                            text: 'Ocorreu um erro ao criar o projeto.',
+                            icon: 'error',
+                            customClass: 'custom-swal',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             });
         });
-
     </script>
 }
