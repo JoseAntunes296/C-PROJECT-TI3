@@ -7,6 +7,40 @@
 
 @section styles {
     <style>
+        select[name="projectTable_length"] {
+            color: white !important;
+        }
+
+        #usersTable_filter {
+            color: white !important;
+        }
+
+        .dataTables_paginate {
+            color: white !important;
+        }
+
+        .paginate_button {
+            color: white !important;
+        }
+
+            .paginate_button.current {
+                color: white !important;
+            }
+
+        .dataTables_paginate a {
+            color: white !important;
+        }
+
+        select[name="projectTable_length"] {
+            background-color: #1f2029 !important;
+        }
+
+        .dataTables_length label,
+        #projectTable_filter label {
+            color: white;
+            background: #1f2029;
+        }
+
         .custom-swal {
             background-color: #222831 !important;
             color: white !important;
@@ -80,7 +114,7 @@
     else
     {
         <div class="table-responsive">
-            <table class="table" style="background-color: #222831;color:white;">
+            <table id="usersTable" class="table" style="background-color: #222831;color:white;">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -103,14 +137,17 @@
                             <td>@user.email</td>
                             <td>@admin</td>
                             <td>
-                                <button class="btn hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#editUserModal"
-                                        onclick="editUser(this)" data-user-id="@user.IdUser">
-                                    Editar
-                                </button>
-                                <button class="btn hoverView btn-delete" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#confirmDeleteModal" data-user-id="@user.IdUser">Apagar</button>
+                                <div style="display: flex; gap: 10px;">
+                                    <button class="btn hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#editUserModal"
+                                            onclick="editUser(this)" data-user-id="@user.IdUser">
+                                        <ion-icon name="create-outline"></ion-icon>
+                                    </button>
+                                    <button class="btn hoverView btn-delete" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#confirmDeleteModal" data-user-id="@user.IdUser">
+                                        <ion-icon name="trash-outline"></ion-icon>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
-
                     }
                 </tbody>
             </table>
@@ -144,7 +181,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1f2029; color:white;">
             <div class="modal-header">
-                <h5 class="modal-title" id="editUserModalLabel">Editar Projeto</h5>
+                <h5 class="modal-title" id="editUserModalLabel">Editar Utilizador</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
@@ -184,9 +221,23 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+<script src="https://nightly.datatables.net/js/jquery.dataTables.js"</script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"</script>
+<script src="https://cdn.datatables.net/plug-ins/1.10.25/i18n/Portuguese.json"></script>
 
 @section scripts {
     <script>
+        function datatableShow() {
+            var table = new DataTable('#usersTable', {
+                language: {
+                    url: "/Content/Portuguese.json"
+                }
+            });
+        }
+        $(document).ready(function () {
+            datatableShow();
+        });
         function editUser(button) {
             var userId = $(button).data('user-id');
 

@@ -6,9 +6,43 @@
 
 @section styles {
     <style>
-        .custom-swal {
-            background-color: #222831;
+        select[name="projectTable_length"] {
+            color: white !important;
+        }
+
+        input[type="search"] {
+            color: white !important;
+        }
+
+        .dataTables_paginate {
+            color: white !important;
+        }
+
+        .paginate_button {
+            color: white !important;
+        }
+
+            .paginate_button.current {
+                color: white !important;
+            }
+
+        .dataTables_paginate a {
+            color: white !important;
+        }
+
+        select[name="projectTable_length"] {
+            background-color: #1f2029 !important;
+        }
+
+        .dataTables_length label,
+        #projectTable_filter label {
             color: white;
+            background: #1f2029;
+        }
+
+        .custom-swal {
+            background-color: #222831 !important;
+            color: white !important;
         }
 
         .swal2-confirm {
@@ -18,11 +52,11 @@
         }
 
             .swal2-confirm:hover {
-                opacity: 0.8;
-                background-color: #222831;
-                color: white;
-                transition: 0.3s;
-                border-radius: 1rem;
+                opacity: 0.8 !important;
+                background-color: #222831 !important;
+                color: white !important;
+                transition: 0.3s !important;
+                border-radius: 1rem !important;
             }
 
         tbody tr {
@@ -70,7 +104,7 @@
     else
     {
         <div class="table-responsive">
-            <table class="table" style="background-color: #222831;color:white;">
+            <table id="projectTable" class="table" style="background-color: #222831;color:white;">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -90,12 +124,11 @@
                             <td>@project.startDate.ToShortDateString()</td>
                             <td>@project.endDate.ToShortDateString()</td>
                             <td>
-                                <button class="btn hoverView pick-project-button" style="background-color: #1f2029; color: white; " data-toggle="modal" data-target="#PickProjectModal" data-project-id="@project.IdProject">
-                                    Pegar Projeto
+                                <button class="btn  pick-project-button" style=" color: white; " data-toggle="modal" data-target="#PickProjectModal" data-project-id="@project.IdProject">
+                                    <ion-icon size="large" name="add-circle-outline"></ion-icon>
                                 </button>
                             </td>
                         </tr>
-
                     }
                 </tbody>
             </table>
@@ -105,7 +138,6 @@
         <a href="/Home/Index" class="btn hoverView" style="background-color: #222831;color:white; ">Go Back</a>
     </div>
 </div>
-
 <!-- Modal Pick Project -->
 <div class="modal fade" id="PickProjectModal" tabindex="-1" role="dialog" aria-labelledby="PickProjectModalLabel" aria-hidden="true" style="background-color: #1f2029;">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -138,8 +170,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="pickprojectFromModal">Pegar Projeto</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " id="pickprojectFromModal">Pegar Projeto</button>
             </div>
         </div>
     </div>
@@ -147,11 +179,23 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+<script src="https://nightly.datatables.net/js/jquery.dataTables.js"</script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"</script>
+<script src="https://cdn.datatables.net/plug-ins/1.10.25/i18n/Portuguese.json"></script>
 
 @section scripts {
 
     <script>
-    $(document).ready(function () {
+        function datatableShow() {
+            var table = new DataTable('#projectTable', {
+                language: {
+                    url: "/Content/Portuguese.json"
+                }
+            });
+        }
+        $(document).ready(function () {
+            datatableShow();
         $(".pick-project-button").click(function () {
             var projectId = $(this).data('project-id');
             $.ajax({

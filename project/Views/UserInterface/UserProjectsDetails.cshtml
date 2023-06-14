@@ -99,8 +99,8 @@ else
                             <td>@projectDetails.endDate.ToShortDateString()</td>
                             <td><span class="badge badge-@classeCss">@resultado</span></td>
                             <td>
-                                <button class="btn hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#abandonProjectModal" data-project-id="@projectDetails.IdProject">
-                                    Detalhes
+                                <button class="btn" style="color: white;" data-toggle="modal" data-target="#abandonProjectModal" data-project-id="@projectDetails.IdProject">
+                                    <ion-icon size="large" name="add-circle-outline"></ion-icon>
                                 </button>
                             </td>
                         </tr>
@@ -122,17 +122,23 @@ else
                                             int status;
                                             bool isNumeric = int.TryParse(task.status, out status);
                                             var teste = isNumeric && status > 0 ? "Ativo" : "Inativo";
-                                            <tr>
-                                                <td>@task.name</td>
-                                                <td>@task.description</td>
-                                                <td>@task.deadline.ToShortDateString()</td>
-                                                <td>@teste</td>
-                                                <td>
-                                                    <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#showTaskModal" data-task-id="@task.IdTask">
-                                                        Detalhes
-                                                    </button>
-                                                </td>
-                                            </tr>
+
+                                            bool isTaskAvailable = task.UserTaskId == null || task.UserTaskId == Convert.ToInt32(Session["idUser"]);
+
+                                            if (isTaskAvailable)
+                                            {
+                                                <tr>
+                                                    <td>@task.name</td>
+                                                    <td>@task.description</td>
+                                                    <td>@task.deadline.ToShortDateString()</td>
+                                                    <td>@teste</td>
+                                                    <td>
+                                                        <button class="btn" style="color: white;" data-toggle="modal" data-target="#showTaskModal" data-task-id="@task.IdTask">
+                                                            <ion-icon size="large" name="add-circle-outline"></ion-icon>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
                                         }
                                     </tbody>
                                 </table>
@@ -178,7 +184,7 @@ else
             </div>
             <div class="modal-footer">
                 <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
-                <button class="btn btn-danger" id="abandonProjectButton">Abandonar Projeto</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " id="abandonProjectButton">Abandonar Projeto</button>
             </div>
         </div>
     </div>
@@ -203,13 +209,21 @@ else
                         <textarea class="form-control" id="taskDescription" placeholder="Descrição" disabled></textarea>
                     </div>
                     <div class="form-group">
+                        <label for="taskStatus">Status</label>
+                        <select class="form-control" id="taskStatus">
+                            <option value="0">Em andamento</option>
+                            <option value="1">Concluído</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="taskDeadline">Data de Término</label>
                         <input type="date" class="form-control" id="taskDeadline" disabled>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="abandonOrTakeTaskButton" class="btn btn-danger" data-dismiss="modal">Abandonar Tarefa</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal">Fechar</button>
+                <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-dismiss="modal" id="abandonOrTakeTaskButton">Abandonar Tarefa</button>
             </div>
         </div>
     </div>
@@ -289,21 +303,26 @@ $(document).ready(function() {
       data: {
         taskId: taskId
       },
-      success: function(response) {
+        success: function (response) {
+            const deadline = new Date(parseInt(response.deadline.replace("/Date(", "").replace(")/", "")));
+
+            const formattedDeadline = formatDate(deadline);
         $('#taskName').val(response.name);
         $('#taskDescription').val(response.description);
-        $('#taskDeadline').val(response.deadline);
-
+            $('#taskDeadline').val(formattedDeadline);
         var userHasTask = response.userHasTask;
         var abandonOrTakeTaskButton = $('#abandonOrTakeTaskButton');
+        var taskStatusSelect = $('#taskStatus');
 
-        if (userHasTask) {
-          abandonOrTakeTaskButton.text('Abandonar Tarefa');
-          abandonOrTakeTaskButton.removeClass('btn-success').addClass('btn-danger');
-        } else {
-          abandonOrTakeTaskButton.text('Pegar Tarefa');
-          abandonOrTakeTaskButton.removeClass('btn-danger').addClass('btn-success');
-        }
+          if (userHasTask) {
+              abandonOrTakeTaskButton.text('Abandonar Tarefa');
+              abandonOrTakeTaskButton.removeClass('btn-success').addClass('btn-danger');
+              taskStatusSelect.prop('disabled', false);
+          } else {
+              abandonOrTakeTaskButton.text('Pegar Tarefa');
+              abandonOrTakeTaskButton.removeClass('btn-danger').addClass('btn-success');
+              taskStatusSelect.prop('disabled', true);
+          }
 
         abandonOrTakeTaskButton.off('click').on('click', function() {
           if (userHasTask) {
@@ -312,6 +331,10 @@ $(document).ready(function() {
             takeTask(taskId, userId);
           }
         });
+          $('#completeTaskButton').off('click').on('click', function () {
+              var selectedStatus = taskStatusSelect.val();
+              completeTask(taskId, userId, selectedStatus);
+          });
       },
       error: function(error) {
         console.log(error);
@@ -319,7 +342,53 @@ $(document).ready(function() {
     });
   });
 });
-
+function completeTask(taskId, userId, newStatus) {
+    $.ajax({
+        url: '/AdminPanel/CompleteTask',
+        type: 'POST',
+        data: {
+            taskId: taskId,
+            userId: userId,
+            newStatus: newStatus
+        },
+        success: function (response) {
+            if (response.success) {
+                // Tarefa concluída com sucesso
+                Swal.fire({
+                    title: 'Sucesso',
+                    text: response.message,
+                    icon: 'success',
+                    customClass: 'custom-swal',
+                    confirmButtonText: 'OK'
+                }).then(function () {
+                    location.reload()
+                });
+            } else {
+                // Erro ao concluir a tarefa
+                Swal.fire({
+                    title: 'Erro',
+                    text: response.message,
+                    icon: 'error',
+                    customClass: 'custom-swal',
+                    confirmButtonText: 'OK'
+                }).then(function () {
+                    location.reload()
+                });
+            }
+        },
+        error: function (error) {
+            Swal.fire({
+                title: 'Erro',
+                text: error,
+                icon: 'error',
+                customClass: 'custom-swal',
+                confirmButtonText: 'OK'
+            }).then(function () {
+                location.reload()
+            });
+        }
+    });
+}
 function abandonTask(taskId, userId) {
   $.ajax({
     url: '/AdminPanel/abandonTask',

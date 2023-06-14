@@ -132,7 +132,7 @@
     <div class="col-md-3 col-sm-6">
         <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addTaskModal">
             <div class="card-body">
-                <ion-icon size="large" name="receipt-outline"></ion-icon>
+                <ion-icon size="large" name="document-outline"></ion-icon>
                 <h5 class="card-title">Adicionar Tarefas</h5>
             </div>
         </a>
@@ -140,7 +140,7 @@
     <div class="col-md-3 col-sm-6 ">
         <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#addUserModal">
             <div class="card-body">
-                <ion-icon size="large" name="receipt-outline"></ion-icon>
+                <ion-icon size="large" name="person-add-outline"></ion-icon>
                 <h5 class="card-title">Adicionar Utilizadores</h5>
             </div>
         </a>
@@ -148,7 +148,7 @@
     <div class="col-md-3 col-sm-6 ">
         <a href="/AdminPanel/ManageProjects" class="btn hoverView" style="width: 13rem; height: 8rem;">
             <div class="card-body">
-                <ion-icon size="large" name="settings-outline"></ion-icon>
+                <ion-icon size="large" name="create-outline"></ion-icon>
                 <h5 class="card-title">Editar Projetos e Tarefas</h5>
             </div>
         </a>
@@ -156,7 +156,7 @@
     <div class="col-md-3 col-sm-6 ">
         <a href="/AdminPanel/ManageUsers" class="btn hoverView" style="width: 13rem; height: 8rem;">
             <div class="card-body">
-                <ion-icon size="large" name="settings-outline"></ion-icon>
+                <ion-icon size="large" name="create-outline"></ion-icon>
                 <h5 class="card-title">Editar Utilizadores</h5>
             </div>
         </a>
@@ -164,7 +164,7 @@
     <div class="col-md-3 col-sm-6 ">
         <a href="#" class="btn hoverView" style="width: 13rem; height: 8rem;" data-toggle="modal" data-target="#downloadsModal">
             <div class="card-body">
-                <ion-icon size="large" name="settings-outline"></ion-icon>
+                <ion-icon size="large" name="cloud-download-outline"></ion-icon>
                 <h5 class="card-title">Downloads</h5>
             </div>
         </a>
@@ -274,7 +274,7 @@
     </div>
 </div>
 <!-- Project Modal -->
-<div class="modal fade" id="projectModal" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel" aria-hidden="true">
+<div class="modal fade" id="projectModal" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel" aria-hidden="true"style="background-color: #1f2029;">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1f2029;">
             <div class="modal-header" style="color:white;">
@@ -502,20 +502,29 @@
                         taskEndDate: taskEndDate
                     },
                     success: function (response) {
-                        Swal.fire({
-                            title: 'Sucesso!',
-                            text: 'Tarefa adicionada com sucesso!',
-                            icon: 'success',
-                            customClass: 'custom-swal',
-                            confirmButtonText: 'OK'
-                        }).then(function () {
-                            $('#taskDetails').val('');
-                            $('#taskEndDate').val('');
-                            $('#addTaskModal').modal('hide');
-                        });
+                        if (response.success == true) {
+                            Swal.fire({
+                                title: 'Sucesso!',
+                                text: 'Tarefa adicionada com sucesso!',
+                                icon: 'success',
+                                customClass: 'custom-swal',
+                                confirmButtonText: 'OK'
+                            }).then(function () {
+                                $('#taskDetails').val('');
+                                $('#taskEndDate').val('');
+                                $('#addTaskModal').modal('hide');
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Erro!',
+                                text: 'A data de término da tarefa está fora do intervalo de datas do projeto.',
+                                icon: 'error',
+                                customClass: 'custom-swal',
+                                confirmButtonText: 'OK'
+                            });
+                        }
                     },
                     error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
                         Swal.fire({
                             title: 'Erro!',
                             text: 'Ocorreu um erro ao adicionar a tarefa.',
@@ -625,6 +634,17 @@
                     return;
                 }
 
+                if (!validateDates(projectStartDate, projectEndDate)) {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'As datas informadas não são válidas.',
+                        icon: 'error',
+                        customClass: 'custom-swal',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
                 var formData = {
                     name: projectName,
                     description: projectDetails,
@@ -661,5 +681,34 @@
                 });
             });
         });
+        function validateDates(startDate, endDate) {
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            var start = new Date(startDate);
+            var end = new Date(endDate);
+
+            var startYear = start.getFullYear();
+            var startMonth = start.getMonth();
+            var startDay = start.getDate();
+
+            var endYear = end.getFullYear();
+            var endMonth = end.getMonth();
+            var endDay = end.getDate();
+
+            if (startYear < today.getFullYear() ||
+                (startYear === today.getFullYear() && startMonth < today.getMonth()) ||
+                (startYear === today.getFullYear() && startMonth === today.getMonth() && startDay < today.getDate())) {
+                return false;
+            }
+
+            if (endYear < startYear ||
+                (endYear === startYear && endMonth < startMonth) ||
+                (endYear === startYear && endMonth === startMonth && endDay <= startDay)) {
+                return false;
+            }
+
+            return true;
+        }
     </script>
 }

@@ -79,7 +79,7 @@
     else
     {
         <div class="table-responsive">
-            <table class="table" style="background-color: #222831;color:white;">
+            <table id="projectTable" class="table" style="background-color: #222831;color:white;">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -107,9 +107,11 @@
                             <td>
                                 <button class="btn hoverView" style="background-color: #1f2029; color: white; " data-toggle="modal" data-target="#editProjectModal"
                                         onclick="editProject(this)" data-project-id="@project.IdProject">
-                                    Editar
+                                    <ion-icon name="create-outline"></ion-icon>
                                 </button>
-                                <button class="btn btn-delete hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#confirmDeletingProject" data-project-id="@project.IdProject">Apagar</button>
+                                <button class="btn btn-delete hoverView" style="background-color: #1f2029; color: white;" data-toggle="modal" data-target="#confirmDeletingProject" data-project-id="@project.IdProject">
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                </button>
                             </td>
                         </tr>
                         <tr id="project-@project.IdProject-Tasks" class="collapse">
@@ -138,9 +140,11 @@
                                                 <td>
                                                     <button class="btn hoverView" style="background-color: #222831; color: white;" data-toggle="modal" data-target="#editTaskModal"
                                                             onclick="editTask(this)" data-task-id="@task.IdTask">
-                                                        Editar
+                                                        <ion-icon name="create-outline"></ion-icon>
                                                     </button>
-                                                    <button class="btn hoverView btn-task-delete" style="background-color: #222831; color: white;" data-toggle="modal" data-task-id="@task.IdTask" data-target="#confirmDeleteTask">Apagar</button>
+                                                    <button class="btn hoverView btn-task-delete" style="background-color: #222831; color: white;" data-toggle="modal" data-task-id="@task.IdTask" data-target="#confirmDeleteTask">
+                                                        <ion-icon name="trash-outline"></ion-icon>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         }
@@ -279,16 +283,17 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+
 @section scripts {
     <script>
         function editProject(button) {
             var projectId = $(button).data('project-id');
 
             $('#saveProjectUpdates').click(function () {
-                var name = $('#editProjectName').val().trim();
-                var description = $('#editProjectDescription').val().trim();
-                var startDate = $('#editProjectStartDate').val().trim();
-                var endDate = $('#editProjectEndDate').val().trim();
+                var name = $('#editProjectName').val();
+                var description = $('#editProjectDescription').val();
+                var startDate = $('#editProjectStartDate').val();
+                var endDate = $('#editProjectEndDate').val();
 
                 if (!name || !description || !startDate || !endDate) {
                     Swal.fire({
@@ -299,7 +304,16 @@
                     });
                     return;
                 }
-
+                if (!validateDates(startDate, endDate)) {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'As datas informadas não são válidas.',
+                        icon: 'error',
+                        customClass: 'custom-swal',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
                 $.ajax({
                     url: '/AdminPanel/UpdateProject/',
                     type: 'POST',
@@ -433,6 +447,7 @@
                     text: 'Esta ação não pode ser desfeita.',
                     icon: 'warning',
                     showCancelButton: true,
+                    customClass: 'custom-swal',
                     confirmButtonText: 'Sim, remover!',
                     cancelButtonText: 'Cancelar'
                 }).then(function (result) {
@@ -450,7 +465,10 @@
                     Swal.fire({
                         title: response.success ? 'Sucesso!' : 'Erro!',
                         text: response.success ? 'Projeto removido com sucesso!' : 'Erro ao remover o projeto.',
+                        customClass: 'custom-swal',
                         icon: response.success ? 'success' : 'error'
+                    }).then(function () {
+                        location.reload();
                     });
                 })
                 .fail(function () {
@@ -483,13 +501,13 @@
                     cancelButtonText: 'Cancelar'
                 }).then(function (result) {
                     if (result.isConfirmed) {
-                        deleteProject(taskId);
+                        deleteTask(taskId);
                     }
                 });
                 $('#confirmDeleteTaskModal').modal('hide');
             });
         });
-        function deleteProject(taskId) {
+        function deleteTask(taskId) {
             $.post('/AdminPanel/DeleteTask', { taskId: taskId })
                 .done(function (response) {
                     Swal.fire({
@@ -543,6 +561,16 @@
                     }
                 }
             });
+        }
+        function validateDates(startDate, endDate) {
+            var start = new Date(startDate);
+            var end = new Date(endDate);
+
+            if (end < start || end.getTime() === start.getTime()) {
+                return false;
+            }
+
+            return true;
         }
     </script>
 }

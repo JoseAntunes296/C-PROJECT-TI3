@@ -39,6 +39,15 @@
     .col-md-3.col-sm-6 {
         margin-bottom: 2rem !important;
     }
+
+    a {
+        color: white !important;
+    }
+
+        a:hover {
+            color: white !important;
+            text-decoration: none;
+        }
 </style>
 <div class="row text-center">
     @{
@@ -47,7 +56,7 @@
             <div class="col-md-3 col-sm-6">
                 <a href="/Accounts/SignOut" id="SignOut" name="SignOut" class="btn hoverView" style="width: 13rem; height: 8rem;">
                     <div class="card-body">
-                        <ion-icon size="large" name="person-outline"></ion-icon>
+                        <ion-icon size="large" name="person-remove-outline"></ion-icon>
                         <h5 class="card-title">Sair</h5>
                     </div>
                 </a>
@@ -57,7 +66,7 @@
                 <div class="col-md-3 col-sm-6 ">
                     <a href="/AdminPanel/Index" class="btn hoverView" style="width: 13rem; height: 8rem;">
                         <div class="card-body">
-                            <ion-icon size="large" name="settings-outline"></ion-icon>
+                            <ion-icon size="large" name="construct-outline"></ion-icon>
                             <h5 class="card-title">Administração</h5>
                         </div>
                     </a>
@@ -66,7 +75,7 @@
             <div class="col-md-3 col-sm-6">
                 <a href="/UserInterface/UserProfile" id="Profile" name="Profile" class="btn hoverView" data-toggle="modal" data-target="#userModal" data-userid="@(Convert.ToInt32(Session["IdUser"]))" style="width: 13rem; height: 8rem;">
                     <div class="card-body">
-                        <ion-icon size="large" name="settings-outline"></ion-icon>
+                        <ion-icon size="large" name="person-outline"></ion-icon>
                         <h5 class="card-title">Perfil</h5>
                     </div>
                 </a>
@@ -74,7 +83,7 @@
             <div class="col-md-3 col-sm-6 ">
                 <a href="/UserInterface/UserProjectsDetails" class="btn hoverView" style="width: 13rem; height: 8rem;">
                     <div class="card-body">
-                        <ion-icon size="large" name="person-outline"></ion-icon>
+                        <ion-icon size="large" name="file-tray-stacked-outline"></ion-icon>
                         <h5 class="card-title">Meus Projetos</h5>
                     </div>
                 </a>
@@ -100,9 +109,7 @@
             </div>
         }
     }
-
 </div>
-
 @* modal *@
 <!-- Login Modal -->
 <div class="modal fade" id="authenticationModal" tabindex="-1" role="dialog" aria-labelledby="login-modal-label" aria-hidden="true">
@@ -129,8 +136,7 @@
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="remember-me">
-                                                <label class="custom-control-label" for="remember-me">Remember me</label>
+                                                <a href="" id="forgotPasswordLink">Esqueceu-se da password?</a>
                                             </div>
                                         </div>
                                         <button type="submit" class="btn btn-primary btn-block">Login</button>
@@ -144,13 +150,41 @@
         </div>
     </div>
 </div>
-
+<!-- Forgot Password Modal -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="forgot-password-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #222831; color: white;">
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row justify-content-center">
+                        <div class="col-md-9">
+                            <div style="position: relative; display: -ms-flexbox; display: flex; -ms-flex-direction: column; flex-direction: column;">
+                                <div class="card-header" style="background-color: transparent !important; border-bottom: 1px solid #fff !important; background-color: white;">
+                                    <h5 class="card-title text-center">Esqueceu-se da password?</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="forgotPasswordForm">
+                                        <div class="form-group">
+                                            <label for="forgot-email">Email</label>
+                                            <input type="email" class="form-control" name="Email" id="forgot-email" placeholder="Enter Email">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-block">Enviar Email</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Profile Modal -->
 <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true" style="background-color: #1f2029;">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1f2029; color:white;">
             <div class="modal-header">
-                <h5 class="modal-title" id="userModalLabel">User Profile</h5>
+                <h5 class="modal-title" id="userModalLabel">Perfil</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" style="color:white">&times;</span>
                 </button>
@@ -172,12 +206,40 @@
                             <label for="email">Email:</label>
                             <input type="email" class="form-control" id="email" maxlength="50">
                         </div>
+                        <button id="changePasswordBtn" type="button" class="btn btn-primary">Alterar senha</button>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                 <button id="saveChangesBtn" type="button" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Password Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel" aria-hidden="true" style="background-color: #1f2029;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1f2029; color:white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordModalLabel">Alterar Senha</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="color:white">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newPassword">Nova senha:</label>
+                    <input type="password" class="form-control" id="newPassword">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar senha:</label>
+                    <input type="password" class="form-control" id="confirmPassword">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="savePasswordBtn" type="button" class="btn btn-primary" data-user-session="@Session["IdUser"]">Atualizar password</button>
             </div>
         </div>
     </div>
@@ -189,6 +251,112 @@
 @section scripts {
     <script>
         $(document).ready(function () {
+            $("#changePasswordBtn").click(function () {
+                $("#userModal").modal("hide");
+                $("#passwordModal").modal("show");
+            });
+
+            $("#savePasswordBtn").click(function () {
+                var newPassword = $("#newPassword").val();
+                var confirmPassword = $("#confirmPassword").val();
+                var userSession = $(this).data("user-session");
+                console.log("teste");
+                debugger
+                if (newPassword === "" || confirmPassword === "") {
+                    Swal.fire({
+                        title: "Campos vazios",
+                        text: "Por favor, preencha todos os campos de senha",
+                        icon: "warning",
+                        customClass: 'custom-swal',
+                        confirmButtonText: "OK"
+                    }).then(function () {
+                        return;
+                    });
+                } else {
+                    $.ajax({
+                        url: "/Accounts/ChangePassword",
+                        type: "POST",
+                        data: {
+                            Npassword: newPassword,
+                            Cpassword: confirmPassword,
+                            userId: userSession
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                title: "Alterado com sucesso",
+                                text: response.message,
+                                icon: "success",
+                                customClass: 'custom-swal',
+                                confirmButtonText: "OK"
+                            }).then(function () {
+                                $("#passwordModal").modal("hide");
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire({
+                                title: "Erro na alteração",
+                                text: xhr.message,
+                                icon: "error",
+                                customClass: 'custom-swal',
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    });
+                }
+            });
+            $("#forgotPasswordLink").click(function (e) {
+                e.preventDefault();
+                $("#authenticationModal").modal("hide");
+                $("#forgotPasswordModal").modal("show");
+            });
+            $("#forgotPasswordForm").submit(function (e) {
+                e.preventDefault();
+                var email = $("#forgot-email").val();
+                if (email) {
+                    $.ajax({
+                        url: "/Accounts/ForgotPassword",
+                        type: "POST",
+                        data: { email: email },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Sucesso",
+                                    text: response.message,
+                                    icon: "success",
+                                    customClass: 'custom-swal',
+                                    confirmButtonText: "OK"
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Erro",
+                                    text: response.message,
+                                    icon: "error",
+                                    customClass: 'custom-swal',
+                                    confirmButtonText: "OK"
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                title: "Erro",
+                                text: "Ocorreu um erro ao processar a solicitação",
+                                icon: "error",
+                                customClass: 'custom-swal',
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Erro",
+                        text: "Campo email é obrigatório!",
+                        icon: "error",
+                        customClass: 'custom-swal',
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+            //login
             $('#authenticationModal form').submit(function (e) {
                 e.preventDefault();
                 var $form = $(this);
@@ -223,11 +391,9 @@
                     }
                 });
             });
-
             // SignOut
             $("#SignOut").click(function (event) {
                 event.preventDefault();
-
                 Swal.fire({
                     title: "Signout",
                     text: "Signout com sucesso",
@@ -247,11 +413,9 @@
                     }
                 });
             });
-
             $('#selectImageBtn').click(function () {
                 $('#imageInput').click();
             });
-
             $('#imageInput').change(function () {
                 var file = this.files[0];
                 var reader = new FileReader();
@@ -260,7 +424,6 @@
                 };
                 reader.readAsDataURL(file);
             });
-
             $('#saveChangesBtn').click(function () {
                 var file = $('#imageInput').prop('files')[0];
                 var formData = new FormData();
@@ -291,7 +454,6 @@
                     }
                 });
             });
-
             $('#userModal').on('shown.bs.modal', function () {
                 var userId = $('#Profile').data('userid');
 

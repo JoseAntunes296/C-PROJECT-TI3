@@ -12,6 +12,7 @@ namespace Project.Controllers
 {
     public class ProjectsAvailableController : Controller
     {
+        [HttpGet]
         public ActionResult Projects()
         {
             try
@@ -33,12 +34,7 @@ namespace Project.Controllers
 
                 projects = projects.Where(p => !userProjects.Contains(p.IdProject)).ToList();
 
-                var viewModel = new ViewModal
-                {
-                    Projects = projects
-                };
-
-                return View(viewModel);
+                return View(projects);
             }
             catch (Exception ex)
             {
