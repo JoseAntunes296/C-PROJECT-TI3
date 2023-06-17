@@ -1,37 +1,8 @@
-﻿<style>
-    .custom-swal {
-        background-color: #222831;
-        color: white;
-    }
-
-    .swal2-confirm {
-        color: white !important;
-        background-color: #1f2029 !important;
-        border-radius: 1rem !important;
-    }
-
-        .swal2-confirm:hover {
-            opacity: 0.8;
-            background-color: #222831;
-            color: white;
-            transition: 0.3s;
-            border-radius: 1rem;
-        }
-
-    .hoverView {
-        opacity: 0.8;
-        background-color: #222831;
-        color: white;
-        transition: 0.3s;
-        border-radius: 2rem;
-    }
-
-        .hoverView:hover {
-            opacity: 1.2;
-            color: white;
-            border-color: #225841;
-        }
-
+﻿@{
+    ViewBag.Title = "Página Principal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
     label {
         float: left;
     }
@@ -103,7 +74,7 @@
                 <a href="#" class="btn hoverView" data-toggle="modal" data-target="#authenticationModal" style="width: 13rem; height: 8rem;">
                     <div class="card-body">
                         <ion-icon size="large" name="person-outline"></ion-icon>
-                        <h5 class="card-title">Login/Register</h5>
+                        <h5 class="card-title">Login</h5>
                     </div>
                 </a>
             </div>

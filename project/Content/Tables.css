@@ -1,0 +1,12 @@
+﻿tbody tr {
+    opacity: 0.6;
+}
+.table-container {
+    display: inline-block;
+}
+tbody tr:hover {
+    opacity: 1;
+}
+.table-responsive {
+    overflow-x: auto;
+}

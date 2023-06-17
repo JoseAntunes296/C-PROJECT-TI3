@@ -6,13 +6,18 @@
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/containerHeight.css")
+    @Styles.Render("~/Content/SwallStyle.css")
+    @Styles.Render("~/Content/Tables.css")
+    @Styles.Render("~/Content/Buttons.css")
     @Scripts.Render("~/bundles/modernizr")
     @RenderSection("styles", required: false)
+    <link rel="icon" href="/Content/Icon/icon.ico">
     <style>
         html,
         body {
             background-color: #1f2029;
         }
+
         .container {
             height: 100vh; /* set container height to full viewport height */
             display: flex; /* use flexbox to center child elements */

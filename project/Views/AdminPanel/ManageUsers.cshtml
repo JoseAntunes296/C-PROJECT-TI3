@@ -40,55 +40,6 @@
             color: white;
             background: #1f2029;
         }
-
-        .custom-swal {
-            background-color: #222831 !important;
-            color: white !important;
-        }
-
-        .swal2-confirm {
-            color: white !important;
-            background-color: #1f2029 !important;
-            border-radius: 1rem !important;
-        }
-
-            .swal2-confirm:hover {
-                opacity: 0.8 !important;
-                background-color: #222831 !important;
-                color: white !important;
-                transition: 0.3s !important;
-                border-radius: 1rem !important;
-            }
-
-        .hoverView {
-            opacity: 0.8;
-            background-color: #222831;
-            color: white;
-            transition: 0.3s;
-            border-radius: 2rem;
-        }
-
-            .hoverView:hover {
-                opacity: 1.2;
-                color: white;
-                border-color: #225841;
-            }
-
-        tbody tr {
-            opacity: 0.6;
-        }
-
-        .table-container {
-            display: inline-block;
-        }
-
-        tbody tr:hover {
-            opacity: 1;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
     </style>
 }
 @{
@@ -252,8 +203,9 @@
                         text: 'O campo de email não pode ser vazio.',
                         customClass: 'custom-swal',
                         icon: 'error'
+                    }).then(function () {
+                        location.reload();
                     });
-                    return;
                 }
 
                 $.ajax({
@@ -271,7 +223,9 @@
                             text: 'Utilizador atualizado com sucesso!',
                             customClass: 'custom-swal',
                             icon: 'success'
-                        })
+                        }).then(function () {
+                            location.reload();
+                        });
                     },
                     error: function (xhr, status, error) {
                         Swal.fire({
@@ -279,6 +233,8 @@
                             text: 'Erro ao atualizar o utilizador.',
                             customClass: 'custom-swal',
                             icon: 'error'
+                        }).then(function () {
+                            location.reload();
                         });
                     }
                 });
@@ -301,6 +257,8 @@
                         text: 'Erro ao procurar o utilizador.',
                         customClass: 'custom-swal',
                         icon: 'error'
+                    }).then(function () {
+                        location.reload();
                     });
                 }
             });
@@ -341,6 +299,8 @@
                         text: response.success ? 'Utilizador removido com sucesso!' : 'Erro ao remover o utilizador.',
                         customClass: 'custom-swal',
                         icon: response.success ? 'success' : 'error'
+                    }).then(function () {
+                        location.reload();
                     });
                 })
                 .fail(function () {
@@ -349,6 +309,8 @@
                         text: 'Erro ao remover o utilizador.',
                         customClass: 'custom-swal',
                         icon: 'error'
+                    }).then(function () {
+                        location.reload();
                     });
                 });
         }

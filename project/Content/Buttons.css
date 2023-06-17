@@ -1,0 +1,12 @@
+﻿.hoverView {
+    opacity: 0.8;
+    background-color: #222831;
+    color: white;
+    transition: 0.3s;
+    border-radius: 2rem;
+}
+    .hoverView:hover {
+        opacity: 1.2;
+        color: white;
+        border-color: #225841;
+    }
