@@ -234,6 +234,16 @@
 
 @section scripts {
     <script>
+        function showSwalMessage(title, text, icon) {
+            Swal.fire({
+                title: title,
+                text: text,
+                customClass: 'custom-swal',
+                icon: icon
+            }).then(function () {
+                location.reload();
+            });
+        }
         function editProject(button) {
             var projectId = $(button).data('project-id');
 
@@ -244,23 +254,10 @@
                 var endDate = $('#editProjectEndDate').val();
 
                 if (!name || !description || !startDate || !endDate) {
-                    Swal.fire({
-                        title: 'Erro!',
-                        text: 'Todos os campos devem ser preenchidos.',
-                        customClass: 'custom-swal',
-                        icon: 'error'
-                    });
-                    return;
+                    showSwalMessage('Erro!', 'Todos os campos devem ser preenchidos.', 'error');
                 }
                 if (!validateDates(startDate, endDate)) {
-                    Swal.fire({
-                        title: 'Erro!',
-                        text: 'As datas informadas não são válidas.',
-                        icon: 'error',
-                        customClass: 'custom-swal',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
+                    showSwalMessage('Erro!', 'As datas informadas não são válidas', 'error');
                 }
                 $.ajax({
                     url: '/AdminPanel/UpdateProject/',
@@ -273,22 +270,10 @@
                         endDate: endDate
                     },
                     success: function (response) {
-                        Swal.fire({
-                            title: 'Sucesso!',
-                            text: 'Projeto atualizado com sucesso!',
-                            customClass: 'custom-swal',
-                            icon: 'success'
-                        }).then(function () {
-                            location.reload();
-                        });
+                        showSwalMessage('Sucesso!', 'Projeto atualizado com sucesso!', 'success');
                     },
                     error: function (xhr, status, error) {
-                        Swal.fire({
-                            title: 'Erro!',
-                            text: 'Erro ao atualizar o projeto.',
-                            customClass: 'custom-swal',
-                            icon: 'error'
-                        });
+                        showSwalMessage('Erro!', 'Erro ao atualizar o projeto.', 'error');
                     }
                 });
             });
@@ -310,12 +295,7 @@
                     $('#editProjectEndDate').attr('value', formattedEndDate);
                 },
                 error: function (xhr, status, error) {
-                    Swal.fire({
-                        title: 'Erro!',
-                        text: 'Erro ao carregar o projeto.',
-                        customClass: 'custom-swal',
-                        icon: 'error'
-                    });
+                    showSwalMessage('Erro!', 'Erro ao carregar o projeto.', 'error');
                 }
             });
         }
@@ -335,22 +315,10 @@
                         status: $('#editTaskStatus').val()
                     },
                     success: function (response) {
-                        Swal.fire({
-                            title: 'Sucesso!',
-                            text: 'Tarefa atualizada com sucesso!',
-                            customClass: 'custom-swal',
-                            icon: 'success'
-                        }).then(function () {
-                            location.reload();
-                        });
+                        showSwalMessage('Sucesso!', 'Tarefa atualizada com sucesso!', 'success');
                     },
                     error: function (xhr, status, error) {
-                        Swal.fire({
-                            title: 'Erro!',
-                            text: 'Ocorreu um erro ao atualizar a tarefa.',
-                            customClass: 'custom-swal',
-                            icon: 'error'
-                        });
+                        showSwalMessage('Erro!', 'Ocorreu um erro ao atualizar a tarefa.', 'error');
                     }
                 });
             });
@@ -371,12 +339,7 @@
                     $('#editTaskStatus').val(status);
                 },
                 error: function (xhr, status, error) {
-                    Swal.fire({
-                        title: 'Erro!',
-                        text: 'Ocorreu um erro ao obter os detalhes da tarefa.',
-                        customClass: 'custom-swal',
-                        icon: 'error'
-                    });
+                    showSwalMessage('Erro!', 'Ocorreu um erro ao obter os detalhes da tarefa.', 'error');
                 }
             });
         }
@@ -496,7 +459,6 @@
                 icon.setAttribute('id', `project-${projectId}-Icon`);
             }
 
-            // Fechar as outras dropdowns
             const collapseElements = document.querySelectorAll('[id^="project-"][id$="-Tasks"]');
             collapseElements.forEach((element) => {
                 const elementId = element.getAttribute('id');
@@ -517,7 +479,6 @@
             if (end < start || end.getTime() === start.getTime()) {
                 return false;
             }
-
             return true;
         }
     </script>

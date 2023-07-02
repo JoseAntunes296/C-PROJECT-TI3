@@ -47,7 +47,6 @@ namespace Project.Controllers
                     }
                 }
 
-                // Return a response indicating success or failure
                 return Json(new { success = ModelState.IsValid });
             }
         }
