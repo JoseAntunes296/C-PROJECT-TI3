@@ -132,6 +132,15 @@ namespace Project.Controllers
                 }
             }
         }
+        private string GenerateRandomPassword()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            var password = new string(Enumerable.Repeat(chars, 8)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            return password;
+        }
         private void SendEmail(string toEmail, string subject, string body)
         {
             using (var client = new SmtpClient())
@@ -254,15 +263,6 @@ namespace Project.Controllers
                 }
             }
             return Json(new { success = false, error = "Email não fornecido" });
-        }
-        private string GenerateRandomPassword()
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var random = new Random();
-            var password = new string(Enumerable.Repeat(chars, 8)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
-
-            return password;
         }
         private string GenerateUniqueToken(ProjectContext dbContext)
         {
